@@ -33,7 +33,9 @@ const RegressionAnimationPlaceholder = () => (
 const AdvancedStatistics = () => {
   const [activeSection, setActiveSection] = useState('anova')
   const [selectedConcept, setSelectedConcept] = useState<'between' | 'within' | null>(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
+  const contentRef = useRef<HTMLDivElement>(null)
   const anovaRef = useRef<HTMLDivElement>(null)
   const ttestRef = useRef<HTMLDivElement>(null)
   const regressionRef = useRef<HTMLDivElement>(null)
@@ -54,8 +56,8 @@ const AdvancedStatistics = () => {
         })
       },
       {
-        root: null, // observes intersections relative to the viewport
-        rootMargin: '-50% 0px -50% 0px', // triggers when the section is in the vertical center
+        root: null,
+        rootMargin: '-50% 0px -50% 0px',
         threshold: 0
       }
     )
@@ -66,12 +68,21 @@ const AdvancedStatistics = () => {
       }
     })
 
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = window.scrollY / totalHeight
+      setScrollProgress(progress)
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
     return () => {
       sectionRefs.forEach(({ ref }) => {
         if (ref.current) {
           observer.unobserve(ref.current)
         }
       })
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
@@ -104,21 +115,31 @@ const AdvancedStatistics = () => {
   }
 
   return (
-    <div className="bg-black text-white" style={{ fontFamily: 'Aptos' }}>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-black">
-        <div className="mx-auto max-w-7xl px-6 md:px-4">
-            <NavigationBar />
+    <div className="bg-background text-white" style={{ fontFamily: 'Aptos' }}>
+      <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-6 md:px-4 py-4">
+          <NavigationBar />
+          {/* Horizontal Progress Bar */}
+          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-white/10">
+            <motion.div 
+              className="h-full"
+              style={{ 
+                width: `${scrollProgress * 100}%`,
+                backgroundColor: '#81a8e7'
+              }}
+            />
+          </div>
         </div>
       </header>
 
-      <div className="flex">
+      <main className="flex pt-20">
         
         {/* Left Column: Scrollable Content */}
-        <div className="w-1/2 pt-24 min-h-screen">
-          <div className="max-w-xl ml-auto mr-12 space-y-12">
+        <div ref={contentRef} className="w-1/2">
+          <div className="max-w-xl ml-auto p-12 space-y-12">
             
             {/* --- Section 1: ANOVA --- */}
-            <section ref={anovaRef} id="anova" className="min-h-screen pt-16">
+            <section ref={anovaRef} id="anova" className="min-h-screen">
               <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">1. Understanding ANOVA</h2>
               <div className="space-y-4 text-responsive-p text-gray-300 font-light">
                 <p>
@@ -144,7 +165,7 @@ const AdvancedStatistics = () => {
             </section>
 
             {/* --- Section 2: T-Test --- */}
-            <section ref={ttestRef} id="ttest" className="min-h-screen pt-16">
+            <section ref={ttestRef} id="ttest" className="min-h-screen">
               <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">2. The T-Test</h2>
               <div className="space-y-4 text-responsive-p text-gray-300 font-light">
                 <p>
@@ -160,7 +181,7 @@ const AdvancedStatistics = () => {
             </section>
 
             {/* --- Section 3: Regression Analysis --- */}
-            <section ref={regressionRef} id="regression" className="min-h-screen pt-16">
+            <section ref={regressionRef} id="regression" className="min-h-screen">
               <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">3. Regression Analysis</h2>
               <div className="space-y-4 text-responsive-p text-gray-300 font-light">
                 <p>
@@ -178,8 +199,8 @@ const AdvancedStatistics = () => {
           </div>
         </div>
 
-        {/* Right Column: Sticky Animation with Separator */}
-        <div className="w-1/2 h-screen sticky top-0 flex items-center justify-center p-12 border-l-2 border-white/30">
+        {/* Right Column: Sticky Animation */}
+        <div className="w-1/2 h-screen sticky top-0 flex items-center justify-center p-12">
           <div className="w-full max-w-3xl aspect-[8/5]">
             <AnimatePresence mode="wait">
               <motion.div
@@ -188,7 +209,6 @@ const AdvancedStatistics = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="w-full h-full"
               >
                 {renderAnimation()}
               </motion.div>
@@ -196,7 +216,7 @@ const AdvancedStatistics = () => {
           </div>
         </div>
         
-      </div>
+      </main>
 
       {/* Calculate Button */}
       <div className="pt-6">
