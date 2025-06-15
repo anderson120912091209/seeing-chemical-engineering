@@ -1,3 +1,16 @@
+This project is using d3.js and 3blue1brown's manim as the basis to create visual based educational content. 
+Tech stack includes react, nextjs, typescript and tailwindcss. 
+I had a hard time in chemical engineering trying to understand very abstract concepts in courses like diffusion and thermodynamics, 
+but with visual based learning I was able to learn concepts really fast. 
+
+
+The purpose is to use visualizations to explain complex topics in chemical engineering, which includes: 
+- Advanced Statistics
+- Fluid Dynamics
+- Diffusion & Heat Transfer
+- Thermodynamics
+
+  
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
