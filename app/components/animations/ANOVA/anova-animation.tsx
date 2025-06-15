@@ -15,6 +15,24 @@ const AnovaAnimation = () => {
   useEffect(() => {
     if (!svgRef.current) return;
 
+    // --- Use a FIXED aspect ratio for drawing ---
+    const width = 800;
+    const height = 500;
+    
+    const svg = d3.select(svgRef.current);
+    
+    // Set viewBox and preserveAspectRatio for responsive scaling
+    svg
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    // Clear previous renders before drawing
+    svg.selectAll("*").remove();
+      
+    // Create a group for chart elements and apply margins
+    const g = svg.append("g")
+      .attr("transform", `translate(${40},${40})`);
+
     // Data that matches the distribution in the image
     const data: DataPoint[] = [
         // Group A (blue) - middle range values
@@ -30,9 +48,6 @@ const AnovaAnimation = () => {
         { group: 'C', value: 9.8 }, { group: 'C', value: 8.2 }, { group: 'C', value: 9.0 }, { group: 'C', value: 8.9 },
     ];
 
-    const svg = d3.select(svgRef.current);
-    const width = 800;
-    const height = 500;
     const margin = { top: 40, right: 200, bottom: 80, left: 80 };
     
     // Add x positions for left-to-right scatter
@@ -40,9 +55,6 @@ const AnovaAnimation = () => {
         ...d,
         x: (i / (data.length - 1)) * (width - margin.left - margin.right - 40) + 20
     }));
-
-    svg.selectAll("*").remove();
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Scales
     const xScale = d3.scaleLinear()
@@ -234,8 +246,10 @@ const AnovaAnimation = () => {
   }, []);
 
   return (
-    <div className="p-6 rounded-lg flex justify-center items-center">
-      <svg ref={svgRef} width="800" height="500"></svg>
+    // The container div defines the area the SVG will fit into
+    <div className="w-full h-full">
+      {/* The SVG will scale to fit this div while maintaining its 800x500 aspect ratio */}
+      <svg ref={svgRef}></svg>
     </div>
   );
 };
