@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import ThemeToggle from './ui/theme-toggle'
 
 const NavigationBar = () => {
     const pathname = usePathname()
@@ -24,12 +25,13 @@ const NavigationBar = () => {
             <Link href="/thermodynamics" className={`hover:text-white/80 transition-colors ${pathname === '/thermodynamics' ? 'text-white' : ''}`}>thermodynamics</Link>
         </nav>
 
-        {/* Right-side spacer to balance the layout */}
-        <div className="flex-1 flex justify-end text-sm text-white/60">
-            <Link href="/about-the-author" className={`hover:text-white/80 transition-colors ${pathname === '/about-the-author' ? 'text-white' : ''}`}>about the author.</Link>
+        {/* Right-side with theme toggle and about link */}
+        <div className="flex-1 flex justify-end items-center gap-4">
+            <ThemeToggle size="sm" />
+            <Link href="/about-the-author" className={`text-sm text-white/60 hover:text-white/80 transition-colors ${pathname === '/about-the-author' ? 'text-white' : ''}`}>
+                about the author.
+            </Link>
         </div>
-
-        <div></div>
     </div>
   )
 }

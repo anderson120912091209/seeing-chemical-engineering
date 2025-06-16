@@ -17,11 +17,11 @@ const AnovaDescription = ({ onBetweenClick, onWithinClick }: AnovaDescriptionPro
         </ClickableUnderline>{' '}
         between the means of several groups. 
         The core concept is to compare the variation{' '}
-        <ClickableUnderline color="green" onClick={onBetweenClick}>
+        <ClickableUnderline color="blue" onClick={onBetweenClick}>
           between
         </ClickableUnderline>{' '}
         the groups to the variation{' '}
-        <ClickableUnderline color="red" onClick={onWithinClick}>
+        <ClickableUnderline color="blue" onClick={onWithinClick}>
           within
         </ClickableUnderline>{' '}
         each group.
@@ -31,19 +31,19 @@ const AnovaDescription = ({ onBetweenClick, onWithinClick }: AnovaDescriptionPro
         which yields the best <span className="font-bold"> exam scores.</span>
       </p>
       <p>
-        <span className="font-bold underline-green"> Key Question</span>: the measured average score differ, but is that due a real "
-        <span className="font-bold underline-red">method effect</span>" in teaching methods or is it just random chance? 
+        <span className="font-bold underline-blue"> KEY QUESTION</span>: the measured average score differ, but is that due a real "
+        <span className="font-bold underline-blue">method effect</span>" in teaching methods or is it just random chance? 
         <br/> How can we possibly test this out?
       </p>
       
       <p>
         Well, if the <span className="font-bold underline-blue">variation</span> {" "}
-        <span className="font-bold underline-green">between</span> groups is much larger than {" "}
-        <span className="font-bold underline-red">within</span> them, {" "}
+        <span className="font-bold underline-blue">between</span> groups is much larger than {" "}
+        <span className="font-bold underline-blue">within</span> them, {" "}
         it's a strong indicator that the groups are genuinely different. 
-        <br/> Let's collect some data first! 
+         Let's collect some data first! 
       </p>
-      <p className="text-2xl font-bold ">
+      <p className="text-lg font-bold ">
         Start the experiment! 
       </p>
     </>

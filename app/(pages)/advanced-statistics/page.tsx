@@ -11,6 +11,7 @@ import CalculateButton from '@/app/components/ui/calculate-button'
 import ClickableUnderline from '@/app/components/ui/clickable-underline'
 import AnovaDescription from '@/app/components/content/anova-description'
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
+import { Splitter, SplitterPanel } from 'primereact/splitter'
 
 
 
@@ -45,10 +46,10 @@ const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
                 {stage === 'grouped' && 'Grouping by Method'}
                 {stage === 'scored' && 'Visualizing Exam Scores'}
                 {stage === 'analysis' && 'Analyzing the Variance'}
-                {stage === 'variance-setup' && 'Step 1: Calculate Group Means'}
-                {stage === 'within-variance' && 'Step 3: Within-Group Sum of Squares'}
-                {stage === 'between-variance' && 'Step 4: Between-Group Sum of Squares'}
-                {stage === 'f-test' && 'Step 6: F-Statistic Calculation'}
+                {stage === 'variance-setup' && 'Calculate Group Means'}
+                {stage === 'within-variance' && 'Within-Group Sum of Squares'}
+                {stage === 'between-variance' && 'Between-Group Sum of Squares'}
+                {stage === 'f-test' && 'F-Statistic Calculation'}
                 {stage === 'conclusion' && 'The Verdict'}
                 </h3>
                 <p className="text-white/70 text-sm mt-1 max-w-2xl mx-auto">
@@ -82,8 +83,8 @@ const AdvancedStatistics = () => {
 
   const chapters = [
     { id: 'anova', title: 'ANOVA', number: '01' },
-    { id: 'ttest', title: 'T-Test', number: '02' },
-    { id: 'regression', title: 'Regression', number: '03' }
+    { id: 'ttest', title: 'Case Study', number: '02' },
+    { id: 'regression', title: 'Linear Model', number: '03' }
   ]
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -169,14 +170,16 @@ const AdvancedStatistics = () => {
     switch (activeSection) {
       case 'anova':
         return (
+          <AnovaAnimation />
+        )
+      case 'ttest':
+        return (
           <TeachingMethodsAnova 
             onStateChange={setAnovaState} 
             externalStage={currentStage}
             onStageChange={setCurrentStage}
           />
-        )
-      case 'test':
-        return <AnovaAnimation /> 
+        ) 
       case 'regression':
         return <RegressionAnimationPlaceholder />
       default:
@@ -225,7 +228,7 @@ const AdvancedStatistics = () => {
   }
 
   return (
-    <div className="bg-background text-white" style={{ fontFamily: 'Aptos' }}>
+    <div className="bg-background text-foreground transition-colors duration-300" style={{ fontFamily: 'Aptos' }}>
       <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-6 md:px-4 py-4">
           <NavigationBar />
@@ -250,96 +253,109 @@ const AdvancedStatistics = () => {
         onSidebarToggle={setIsSidebarOpen}
       />
 
-                      <main 
-          className="flex pt-20 transition-all duration-300"
-          style={{ 
-            paddingLeft: isSidebarOpen ? '270px' : '0px',
-            transition: 'padding-left 0.3s ease-in-out'
-          }}
-        >
-          
-          {/* Left Column: Scrollable Content */}
-          <div ref={contentRef} className="w-full lg:w-1/2 transition-all duration-300">
-            <div className={`space-y-12 transition-all duration-300 ${
-              isSidebarOpen ? 'max-w-none p-6 lg:pl-6 lg:pr-6 lg:py-12' : 'max-w-4xl mx-auto p-6 lg:p-12'
-            }`}>
-            
-            {/* --- Section 1: ANOVA --- */}
-            <section id="anova" ref={anovaRef} className="min-h-screen relative">
-              <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">1. Understanding ANOVA</h2>
-              <div className="space-y-4 text-responsive-p text-gray-300 font-light">
-                <AnovaDescription onBetweenClick={handleBetweenClick} onWithinClick={handleWithinClick} />  
-              </div>
+                            <main 
+        className="pt-20 h-screen"
+        style={{ 
+          paddingLeft: isSidebarOpen ? '270px' : '0px',
+          transition: 'padding-left 0.3s ease-in-out'
+        }}
+      >
+        <Splitter className="h-full">
+          <SplitterPanel size={50} minSize={30}>
+            {/* Left Column: Scrollable Content */}
+            <div ref={contentRef} className="h-full overflow-y-auto custom-scrollbar">
+              <div className={`space-y-12 transition-all duration-300 ${
+                isSidebarOpen ? 'max-w-none p-6 lg:pl-6 lg:pr-6 lg:py-12' : 'max-w-4xl mx-auto p-6 lg:p-12'
+              }`}>
               
-              {/* Navigation Controls */}
-              <div className="mt-8 flex justify-start">
-                <div className="w-full max-w-md">
-                  <NavProgressButton
-                    stage={currentStage}
-                    stages={STAGES as unknown as string[]}
-                    onPrevious={prevStage}
-                    onNext={nextStage}
-                    onReset={resetAnimation}
-                    variant="relative"
-                  />
+              {/* --- Section 1: ANOVA --- */}
+              <section id="anova" ref={anovaRef} className="min-h-screen relative">
+                <h2 className="text-2xl font-bold text-white/90 mb-6">1. Understanding ANOVA</h2>
+                <div className="space-y-4 text-sm text-gray-300 font-light">
+                  <AnovaDescription onBetweenClick={handleBetweenClick} onWithinClick={handleWithinClick} />  
                 </div>
-              </div>
-            </section>
-            
-            {/* --- Section 2: T-Test --- */}
-            <section id="ttest" ref={ttestRef} className="min-h-screen">
-              <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">2. The T-Test</h2>
-              <div className="space-y-4 text-responsive-p text-gray-300 font-light">
-                <p>
-                  While ANOVA compares three or more groups, a T-Test is typically used to compare the means of just{' '}
-                  <ClickableUnderline color="blue" onClick={handleBetweenClick}>
-                    two groups
-                  </ClickableUnderline>.
-                </p>
-                <p>
-                  It helps determine if the two groups come from the same population or if they are statistically different from one another.
-                </p>
-              </div>
-            </section>
-            
-            {/* --- Section 3: Regression Analysis --- */}
-            <section id="regression" ref={regressionRef} className="min-h-screen">
-              <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">3. Regression Analysis</h2>
-              <div className="space-y-4 text-responsive-p text-gray-300 font-light">
-                <p>
-                  Regression analysis is used to understand the relationship between a dependent variable and one or more independent variables.
-                </p>
-                <p>
-                  It's often used for{' '}
-                  <ClickableUnderline color="purple" onClick={handleBetweenClick}>
-                    forecasting and prediction
-                  </ClickableUnderline>, allowing us to see how variables influence each other.
-                </p>
-              </div>
-            </section>
-          </div>
-        </div>
-        
-        {/* Vertical Separator */}
-        <div className="hidden lg:block w-px bg-white/10 h-screen sticky top-0"></div>
-        
-        {/* Right Column: Sticky Animations */}
-        <div className="hidden lg:block w-1/2 h-screen sticky top-0 flex-col items-center justify-center p-8">
-            <div className="w-full h-full max-w-4xl max-h-[80vh] bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center">
-              {activeSection === 'anova' && <AnovaInfoPanel {...anovaState} />}
-              <div ref={animationContainerRef} className="w-full flex-grow relative">
-                {renderAnimation()}
+              </section>
+              
+              {/* --- Section 2: ANOVA Case Study --- */}
+              <section id="ttest" ref={ttestRef} className="min-h-screen">
+                <h2 className="text-2xl font-bold text-white/90 mb-6">2. ANOVA Case Study: Teaching Methods</h2>
+                <div className="space-y-4 text-sm text-gray-300 font-light">
+                  <p>
+                    Let's examine a real-world example: A professor wants to compare the effectiveness of three different teaching methods on student performance.
+                  </p>
+                  <p>
+                    <strong className="text-white/90">The Study Setup:</strong>
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>36 students randomly assigned to three groups (12 students each)</li>
+                    <li>Group A: Traditional lecture method</li>
+                    <li>Group B: Interactive discussion method</li>
+                    <li>Group C: Hands-on project method</li>
+                  </ul>
+                  <p>
+                    After one semester, all students take the same standardized test. The question is: Do the different teaching methods produce significantly different learning outcomes?
+                  </p>
+                  <p>
+                    This is where ANOVA helps us determine if the{' '}
+                    <ClickableUnderline color="blue" onClick={handleBetweenClick}>
+                      differences between groups
+                    </ClickableUnderline>{' '}
+                    are greater than the{' '}
+                    <ClickableUnderline color="green" onClick={handleWithinClick}>
+                      variation within each group
+                    </ClickableUnderline>.
+                  </p>
+                  <p>
+                    <strong className="text-white/90">The Data:</strong> Test scores ranging from 0-100, with each group showing different means and variations. The animation on the right demonstrates how ANOVA analyzes this data step by step.
+                  </p>
+                </div>
+                {/* Navigation Controls */}
+                <div className="mt-8 flex justify-start">
+                  <div className="w-full max-w-md">
+                    <NavProgressButton
+                      stage={currentStage}
+                      stages={STAGES as unknown as string[]}
+                      onPrevious={prevStage}
+                      onNext={nextStage}
+                      onReset={resetAnimation}
+                      variant="relative"
+                    />
+                  </div>
+                </div>
+              </section>
+              
+              {/* --- Section 3: Regression Analysis --- */}
+              <section id="regression" ref={regressionRef} className="min-h-screen">
+                <h2 className="text-responsive-h2 font-bold text-white/90 mb-6">3. Regression Analysis</h2>
+                <div className="space-y-4 text-responsive-p text-gray-300 font-light">
+                  <p>
+                    Regression analysis is used to understand the relationship between a dependent variable and one or more independent variables.
+                  </p>
+                  <p>
+                    It's often used for{' '}
+                    <ClickableUnderline color="purple" onClick={handleBetweenClick}>
+                      forecasting and prediction
+                    </ClickableUnderline>, allowing us to see how variables influence each other.
+                  </p>
+                </div>
+              </section>
               </div>
             </div>
-        </div>
-      </main>
+          </SplitterPanel>
 
-      {/* Calculate Button */}
-      <div className="pt-6">
-        <CalculateButton size="lg" variant="default" onClick={CalculateVariance}>
-          Calculate ANOVA
-        </CalculateButton>
-      </div>
+          <SplitterPanel size={50} minSize={30}>
+            {/* Right Column: Sticky Animations */}
+            <div className="h-full flex flex-col items-center justify-center p-8">
+              <div className="w-full h-full max-w-4xl max-h-[80vh] bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center">
+                {activeSection === 'ttest' && <AnovaInfoPanel {...anovaState} />}
+                <div ref={animationContainerRef} className="w-full flex-grow relative">
+                  {renderAnimation()}
+                </div>
+              </div>
+            </div>
+          </SplitterPanel>
+        </Splitter>
+      </main>
     </div>
   )
 }
