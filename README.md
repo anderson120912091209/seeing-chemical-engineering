@@ -2,29 +2,18 @@
 
 A visual learning platform for complex engineering concepts, inspired by 3Blue1Brown's approach to mathematical education.
 
-## 📚 Course Syllabus
+## 📚 Course Syllabus (To be discussed & confirmed with other contributors) 
 
 ### 📊 Advanced Statistics
-**Interactive ANOVA (Analysis of Variance) Tutorial**
-- **Module 1**: Understanding ANOVA Concepts
-- **Module 2**: Case Study - Teaching Methods Comparison (36 Students)
-  - Data Collection & Grouping
-  - Statistical Analysis & Group Means
-  - Variance Calculations (Within-Group & Between-Group)
-  - F-Statistic Computation
-  - Results Interpretation
-
-**Learning Objectives:**
-- Understand degrees of freedom in statistical analysis
-- Visualize variance decomposition
-- Interpret F-statistics and p-values
-- Apply ANOVA to real-world quality control scenarios
+**Engineering Statistics Concepts**
+- Statistical Tests
+- Bayesian Statistics
 
 ### 🌊 Mass Transfer & Diffusion *(Planned)*
 - Fick's Laws of Diffusion
 - Concentration Gradients
 - Mass Transfer Coefficients
-- Boundary Layer Theory
+- Boundary Layer Theories 
 
 ### 🔥 Thermodynamics *(Planned)*
 - First & Second Laws of Thermodynamics
@@ -57,4 +46,82 @@ A visual learning platform for complex engineering concepts, inspired by 3Blue1B
 - **[Turbopack](https://turbo.build/pack)** - Fast bundler for development
 - **[ESLint 9](https://eslint.org/)** - Code linting and formatting
 
-## 🏗️ Project Structure
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm/yarn/pnpm
+
+### Installation
+```bash
+git clone https://github.com/yourusername/seeing-chemical-engineering.git
+cd seeing-chemical-engineering
+npm install
+npm run dev
+```
+
+Visit `http://localhost:3000` to start learning.
+
+## 🎯 Key Features
+
+### Interactive Learning
+- **Step-by-step progression** through complex concepts
+- **Real-time mathematical calculations** with LaTeX rendering
+- **Interactive data visualization** using D3.js
+- **Responsive design** for desktop and mobile learning
+
+### Educational Tools
+- **Progress tracking** with visual indicators
+- **Resizable panels** for customized learning experience
+- **Dark/light themes** for comfortable studying
+- **Mathematical notation** rendered with KaTeX
+
+### Developer Experience
+- **TypeScript throughout** for type safety
+- **Component-based architecture** for easy extension
+- **Hot reload** with Turbopack for fast development
+- **ESLint configuration** for code quality
+
+## 🤝 Contributing
+
+We welcome contributions from:
+- **Chemical Engineers** - Domain expertise and curriculum development
+- **Frontend Developers** - UI/UX improvements and new features
+- **Educators** - Pedagogical insights and content review
+- **Students** - Feedback on learning effectiveness
+
+### Development Setup
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-animation`
+3. Install dependencies: `npm install`
+4. Start development server: `npm run dev`
+5. Make your changes and test thoroughly
+6. Submit a pull request
+
+### Adding New Animations
+1. Create component in `app/components/animations/[MODULE]/`
+2. Use D3.js for data visualization
+3. Integrate KaTeX for mathematical equations
+4. Add navigation stages in the component
+5. Update the course syllabus
+
+## 📋 Roadmap
+
+- [ ] Complete ANOVA module with regression analysis
+- [ ] Implement mass diffusion visualizations
+- [ ] Add thermodynamics phase diagrams
+- [ ] Mobile optimization
+- [ ] Multi-language support
+- [ ] User progress persistence
+- [ ] Interactive problem sets
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🙏 Acknowledgments
+
+- **3Blue1Brown** - Visual mathematics education inspiration
+- **Seeing Theory** - Interactive statistics education
+- **Chemical Engineering Community** - Real-world problem validation
