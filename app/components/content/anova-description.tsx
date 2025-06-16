@@ -1,7 +1,7 @@
 import React from 'react'
 import ClickableUnderline from '../ui/clickable-underline'
 import { Button } from '@/components/ui/button'
-import TeachingMethodsAnova from '@/app/components/animations/ANOVA/teaching-methods-anova'
+
 interface AnovaDescriptionProps {
   onBetweenClick: () => void;
   onWithinClick: () => void;
@@ -27,21 +27,25 @@ const AnovaDescription = ({ onBetweenClick, onWithinClick }: AnovaDescriptionPro
         each group.
       </p>
       <p>
-        Imagine you're an educational researcher comparing <span className="font-bold   "> three teaching methods </span> (A, B, C) to see 
+        Imagine you're an educational researcher comparing <span className="font-bold"> three teaching methods </span> (A, B, C) to see 
         which yields the best <span className="font-bold"> exam scores.</span>
       </p>
       <p>
         <span className="font-bold underline-green"> Key Question</span>: the measured average score differ, but is that due a real "
-        <span className="font-bold underline-red">method effect</span>" in teaching methods or is it just random chance?
+        <span className="font-bold underline-red">method effect</span>" in teaching methods or is it just random chance? 
+        <br/> How can we possibly test this out?
       </p>
+      
       <p>
-        If the variation between groups is much larger than within them, it's a strong indicator that the groups are genuinely different.
+        Well, if the <span className="font-bold underline-blue">variation</span> {" "}
+        <span className="font-bold underline-green">between</span> groups is much larger than {" "}
+        <span className="font-bold underline-red">within</span> them, {" "}
+        it's a strong indicator that the groups are genuinely different. 
+        <br/> Let's collect some data first! 
       </p>
-
-      <Button>
-        Calculate the Sum of Squares 
-      </Button>
-
+      <p className="text-2xl font-bold ">
+        Start the experiment! 
+      </p>
     </>
   )
 }

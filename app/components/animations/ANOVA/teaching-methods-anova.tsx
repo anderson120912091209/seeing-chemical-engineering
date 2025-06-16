@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import VarianceCalculationAnimation from './variance-calculation-animation'
 
 // --- Interfaces ---
 interface Student {
@@ -16,7 +17,7 @@ interface GroupStats {
   count: number;
 }
 
-const STAGES = ['intro', 'grouped', 'scored', 'analysis', 'conclusion'] as const
+export const STAGES = ['intro', 'grouped', 'scored', 'analysis', 'variance-setup', 'within-variance', 'between-variance', 'f-test', 'conclusion'] as const
 type Stage = typeof STAGES[number];
 
 export interface AnovaState {
@@ -27,6 +28,8 @@ export interface AnovaState {
 
 interface TeachingMethodsAnovaProps {
   onStateChange: (state: AnovaState) => void;
+  externalStage?: Stage;
+  onStageChange?: (stage: Stage) => void;
 }
 
 const METHOD_CONFIG = {
@@ -36,8 +39,9 @@ const METHOD_CONFIG = {
 }
 
 // --- Main Component ---
-const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
-  const [stage, setStage] = useState<Stage>('intro')
+const TeachingMethodsAnova = ({ onStateChange, externalStage, onStageChange }: TeachingMethodsAnovaProps) => {
+  const [internalStage, setInternalStage] = useState<Stage>('intro')
+  const stage = externalStage || internalStage
   const [students, setStudents] = useState<Student[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 })
@@ -111,6 +115,40 @@ const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
     onStateChange({ stage, fStatistic, isSignificant })
   }, [stage, fStatistic, isSignificant, onStateChange])
 
+  // If we're in the variance calculation stages, show the variance calculation animation
+  const varianceStages = ['variance-setup', 'within-variance', 'between-variance', 'f-test', 'conclusion'];
+  if (varianceStages.includes(stage)) {
+    // Map stage to animation step (0-5)
+    const stageToStep: Record<string, number> = {
+      'variance-setup': 0,    // Step 1: Calculate Group Means
+      'within-variance': 2,   // Step 3: Within-Group Sum of Squares  
+      'between-variance': 3,  // Step 4: Between-Group Sum of Squares
+      'f-test': 5,           // Step 6: F-Statistic Calculation
+      'conclusion': 5        // Step 6: F-Statistic Calculation (final)
+    };
+    
+    const currentStep = stageToStep[stage] || 0;
+    
+    // Ensure we have valid dimensions
+    const validDimensions = {
+      width: dimensions.width > 0 ? dimensions.width : 800,
+      height: dimensions.height > 0 ? dimensions.height : 600
+    };
+    
+    return (
+      <div ref={containerRef} className="w-full h-full">
+        <VarianceCalculationAnimation 
+          students={students}
+          dimensions={validDimensions}
+          groupStats={groupStats}
+          fStatistic={fStatistic}
+          isSignificant={isSignificant}
+          currentStep={currentStep}
+        />
+      </div>
+    )
+  }
+
   // --- Dynamic Positioning ---
   const { width, height } = dimensions
   const padding = { top: 80, bottom: 120, left: 60, right: 60 }
@@ -126,7 +164,6 @@ const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
       case 'grouped':
       case 'scored':
       case 'analysis':
-      case 'conclusion':
         const groupWidth = chartWidth / 3
         const studentX = padding.left + (methodIndex * groupWidth) + (groupWidth / 12) * (index % 12)
         const studentY = stage === 'grouped' 
@@ -138,6 +175,14 @@ const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
   }
 
   // --- UI Handlers ---
+  const setStage = (newStage: Stage) => {
+    if (onStageChange) {
+      onStageChange(newStage)
+    } else {
+      setInternalStage(newStage)
+    }
+  }
+
   const nextStage = () => {
     const currentIndex = STAGES.indexOf(stage)
     if (currentIndex < STAGES.length - 1) {
@@ -213,7 +258,7 @@ const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
         
         {/* Statistical Annotations */}
         <AnimatePresence>
-        {(stage === 'analysis' || stage === 'conclusion') && Object.entries(groupStats).map(([method, stats], i) => {
+        {stage === 'analysis' && Object.entries(groupStats).map(([method, stats], i) => {
           const groupX = padding.left + (chartWidth / 3) * (i + 0.5)
           const meanY = padding.top + chartHeight - (stats.mean / 100) * chartHeight
           const sd = Math.sqrt(stats.variance)
@@ -278,51 +323,7 @@ const TeachingMethodsAnova = ({ onStateChange }: TeachingMethodsAnovaProps) => {
         })}
       </svg>
       
-      {/* UI Controls - Navigation Buttons */}
-      <div 
-        className="absolute bottom-6 flex items-center justify-between bg-black/20 backdrop-blur-sm border border-white/10 rounded-lg p-3"
-        style={{
-          left: `${padding.left}px`,
-          right: `${padding.right}px`,
-        }}
-      >
-        <button
-          onClick={prevStage}
-          disabled={stage === 'intro'}
-          className="px-3 py-1.5 bg-white/10 hover:bg-white/20 disabled:bg-white/5 disabled:text-white/30 text-white rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
-        
-        <div className="flex items-center gap-3">
-          {STAGES.map((s, index) => (
-            <div
-              key={s}
-              className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                index <= STAGES.indexOf(stage) ? 'bg-[#81a8e7]' : 'bg-white/20'
-              }`}
-            />
-          ))}
-        </div>
-        
-        <button
-          onClick={nextStage}
-          disabled={stage === 'conclusion'}
-          className="px-3 py-1.5 bg-[#81a8e7] hover:bg-[#6b94d9] disabled:bg-white/5 disabled:text-white/30 text-white rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed"
-        >
-          {stage === 'intro' ? 'Start' : 
-           stage === 'grouped' ? 'Show Scores' :
-           stage === 'scored' ? 'Analyze' :
-           stage === 'analysis' ? 'Conclusion' : 'Complete'}
-        </button>
-        
-        <button
-          onClick={resetAnimation}
-          className="px-2.5 py-1.5 border border-white/20 hover:border-white/40 text-white/70 hover:text-white rounded-md text-xs font-medium transition-colors"
-        >
-          Reset
-        </button>
-      </div>
+     
     </div>
   )
 }

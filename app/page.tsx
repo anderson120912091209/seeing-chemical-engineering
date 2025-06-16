@@ -32,63 +32,63 @@ export default function Home() {
         <div className="max-w-6xl mx-auto text-center">
           {/* Main Title */}
           <h1 className="text-5xl md:text-7xl font-light text-white mb-6 leading-tight">
-            seeing science
+            Seeing Science
           </h1>
-                     <h2 className="text-2xl md:text-3xl font-light text-[#81a8e7] mb-8">
-             chemical engineering edition.
-           </h2>
+          <h2 className="text-2xl md:text-3xl font-light text-[#81a8e7] mb-8">
+            Chemical Engineering Edition
+          </h2>
           
           {/* Subtitle */}
-                     <p className="text-lg md:text-xl text-white/70 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Welcome to seeing science - chemical engineering edition.
-            The goal is to make complex, unintuitive concepts in science more accessible through visualizations. <br/>
+          <p className="text-lg md:text-xl text-white/70 mb-12 max-w-4xl mx-auto leading-relaxed">
+            Welcome to Seeing Science, an interactive visualization platform designed to make complex chemical engineering concepts intuitive and accessible.
           </p>
           
           {/* Feature Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <Link href="/advanced-statistics" className="group">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="text-3xl mb-4"></div>
-                <h3 className="text-lg font-medium text-white mb-2">Advanced Statistics</h3>
-                <p className="text-white/60 text-sm">Visualizing concepts such as statistical tests, bayesian statistics and more.</p>
+                <div className="text-3xl mb-2"></div>
+                <h3 className="text-lg font-medium text-white mb-2">Advanced Statistics (ANOVA)</h3>
+                <p className="text-white/60 text-sm">Visually understand Analysis of Variance, a key statistical tool for engineers.</p>
               </div>
             </Link>
             
             <Link href="/mass-diffusion" className="group">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="text-3xl mb-4"></div>
-                <h3 className="text-lg font-medium text-white mb-2">Mass & Heat Transfer and Diffusion</h3>
-                <p className="text-white/60 text-sm">Interactive models of molecular transport and mass transfer phenomena</p>
+                <div className="text-3xl mb-2"></div>
+                <h3 className="text-lg font-medium text-white mb-2">Mass & Diffusion</h3>
+                <p className="text-white/60 text-sm">Explore the principles of mass transfer and diffusion through interactive models.</p>
               </div>
             </Link>
             
             <Link href="/thermodynamics" className="group">
               <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
-                <div className="text-3xl mb-4"></div>
+                <div className="text-3xl mb-2"></div>
                 <h3 className="text-lg font-medium text-white mb-2">Thermodynamics</h3>
-                <p className="text-white/60 text-sm"> Understanding the fundalmentals of thermodynamics from a molecular level. </p>
+                <p className="text-white/60 text-sm">Grasp the laws of thermodynamics with dynamic visualizations of energy and entropy.</p>
               </div>
             </Link>
           </div>
           
           {/* Call to Action */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                         <Link href="/advanced-statistics" className="bg-[#81a8e7] hover:bg-[#6b94d9] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
-               Start Learning
-             </Link>
+            <Link href="/advanced-statistics" className="bg-[#81a8e7] hover:bg-[#6b94d9] text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+              Start Learning
+            </Link>
             <Link href="/about-the-author" className="border border-white/20 hover:border-white/40 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
               About the Project
             </Link>
           </div>
         </div>
-        
-        
       </main>
       
       {/* Footer */}
       <footer className="relative z-10 py-8 px-6 text-center text-white/40 text-sm">
-        <p>Inspired by visual learning pioneers like <Link href="https://www.youtube.com/@3blue1brown" className="underline-blue text-white/80">3Blue1Brown</Link> and Seeing Theory by <Link href="https://seeing-theory.brown.edu/" className="underline-blue text-white/80">Daniel Kunin. </Link></p>
-        <p className="mt-2">I hope to make complex chemical engineering concepts more accessible through visualization.</p>
+        <p>
+          Inspired by the work of <Link href="https://www.youtube.com/@3blue1brown" className="font-bold underline-blue text-white/80">Grant Sanderson</Link> (3Blue1Brown & Manim) and 
+          <Link href="https://seeingtheory.org/" className="font-bold underline-blue text-white/80"> Daniel Kunin</Link>. (Seeing Theory)
+        </p>
+        <p className="mt-2">This project aims to bring similar clarity to chemical engineering education.</p>
       </footer>
     </div>
   );

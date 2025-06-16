@@ -13,22 +13,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chemical Engineering Visual Studio",
-  description: "Visual based education platform for complex engineering & math concepts",
+  title: "Seeing Science - Chemical Engineering Edition",
+  description: "Making complex chemical engineering concepts accessible through visualization",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
   );
-}
+} 
