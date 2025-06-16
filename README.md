@@ -101,24 +101,10 @@ We welcome contributions from:
 
 ### Adding New Animations
 1. Create component in `app/components/animations/[MODULE]/`
-2. Use D3.js for data visualization
+2. Use D3.js or whatever tools of your choice for data visualization
 3. Integrate KaTeX for mathematical equations
 4. Add navigation stages in the component
 5. Update the course syllabus
-
-## 📋 Roadmap
-
-- [ ] Complete ANOVA module with regression analysis
-- [ ] Implement mass diffusion visualizations
-- [ ] Add thermodynamics phase diagrams
-- [ ] Mobile optimization
-- [ ] Multi-language support
-- [ ] User progress persistence
-- [ ] Interactive problem sets
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
