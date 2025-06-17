@@ -1,7 +1,8 @@
 # Seeing Science: Chemical Engineering Edition
 
-All My Notes are In This Folder: 
-https://docs.google.com/document/d/1sO7jJGgKIR_HqmnrOk8s8rISfMUQ2MJmGrz2s__8egI/edit?tab=t.0 
+All My Notes are In This Folder (Including Logics for different Animations) 
+[https://docs.google.com/document/d/1sO7jJGgKIR_HqmnrOk8s8rISfMUQ2MJmGrz2s__8egI/edit?tab=t.0 ](https://app.capacities.io/home/185b71f7-2228-4ccd-90c4-c0ecbeedf99a)
+
 A visual learning platform for complex engineering concepts, inspired by 3Blue1Brown's approach to mathematical education.
 
 ## 📚 Course Syllabus (To be discussed & confirmed with other contributors) 
