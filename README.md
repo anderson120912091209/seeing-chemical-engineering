@@ -1,5 +1,7 @@
 # Seeing Science: Chemical Engineering Edition
 
+All My Notes are In This Folder: 
+https://docs.google.com/document/d/1sO7jJGgKIR_HqmnrOk8s8rISfMUQ2MJmGrz2s__8egI/edit?tab=t.0 
 A visual learning platform for complex engineering concepts, inspired by 3Blue1Brown's approach to mathematical education.
 
 ## 📚 Course Syllabus (To be discussed & confirmed with other contributors) 
