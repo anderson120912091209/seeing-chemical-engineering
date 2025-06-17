@@ -21,7 +21,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 const RegressionAnimationPlaceholder = () => (
   <div className="w-full h-full flex items-center justify-center bg-purple-900/20 rounded-lg p-8">
     <div className="text-center">
-      <div className="text-6xl mb-4">📈</div>
+      <div className="text-6xl mb-4"></div>
       <h3 className="text-2xl text-purple-300 font-semibold">Regression Analysis</h3>
       <p className="text-sm text-gray-400 mt-2">(Placeholder)</p>
     </div>
