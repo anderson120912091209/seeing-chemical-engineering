@@ -1,9 +1,12 @@
 'use client';
-
+/*Brownian Motion animatino is used to simulate the random, movement 
+of particles, users will have controls over the UI sliders on the particles count 
+as well as the step size*/
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as d3 from 'd3';
 
-// Types
+// Data Structue, id for each unique particle, x and y for position, history for the
+// trail of the brownian motion. 
 interface Particle {
   id: number;
   x: number;
@@ -13,6 +16,10 @@ interface Particle {
 
 const BrownianMotion: React.FC = () => {
   // State management
+  /*1. isPlaying: controls the animation state 
+    2. numParticles: number of particles in the simulation
+    3. stepSize: size of each step in the random walk
+    4. stepCount: number of steps taken in the simulation*/
   const [isPlaying, setIsPlaying] = useState(false);
   const [numParticles, setNumParticles] = useState(50);
   const [stepSize, setStepSize] = useState(2);
