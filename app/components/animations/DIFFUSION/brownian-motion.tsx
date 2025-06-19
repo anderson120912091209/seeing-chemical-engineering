@@ -108,9 +108,9 @@ const BrownianMotion: React.FC = () => {
       .attr('class', 'particle')
       .attr('r', 4)
       .attr('fill', '#93c5fd') // blue-300
-      .attr('stroke', '#dbeafe') // blue-100
+       // blue-100
       .attr('stroke-width', 1)
-      .style('filter', 'drop-shadow(0 0 3px #60a5fa)')
+      .style('filter', 'drop-shadow(0 0 1x #60a5fa)')
       .merge(circles)
       .attr('cx', d => d.x)
       .attr('cy', d => d.y);

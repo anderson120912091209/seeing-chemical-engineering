@@ -3,7 +3,7 @@ import React from 'react'
 const AnovaAnimations2 = () => {
   return (
     <div>
-        hello world
+        
     </div>
   )
 }
