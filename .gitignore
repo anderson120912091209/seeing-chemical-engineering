@@ -60,6 +60,10 @@ node_modules/
 # OS specific
 .cursorrules
 
-# Cursor Rules
-.cursorrules
-.taskmaster
+# Cursor Rules and AI Tools
+/.cursorrules
+/.cursor/
+/.taskmaster/
+/.roo/
+/.roomodes
+/.windsurfrules
