@@ -31,6 +31,7 @@ const BrownianMotion: React.FC = () => {
   const animationRef = useRef<number | null>(null);
 
   // Initialize particles
+  /* useCallback function used for memoization */
   const initializeParticles = useCallback(() => {
     const particles: Particle[] = [];
     for (let i = 0; i < numParticles; i++) {
@@ -77,7 +78,7 @@ const BrownianMotion: React.FC = () => {
       
       // Store history (limit to last 100 steps for performance)
       particle.history.push({ x: particle.x, y: particle.y });
-      if (particle.history.length > 100) {
+      if (particle.history.length > 50) {
         particle.history.splice(0, particle.history.length - 100);
       }
     });
@@ -93,17 +94,17 @@ const BrownianMotion: React.FC = () => {
       .append('path')
       .attr('class', 'trail')
       .attr('fill', 'none')
-      .attr('stroke', '#60a5fa') // blue-400
-      .attr('stroke-width', 1.5)
+      .attr('stroke', '#f87171') // red-400
+      .attr('stroke-width', 1)
       .attr('opacity', 0.4)
       .merge(trails)
       .attr('d', d => {
-        if (d.history.length < 2) return '';
-        const line = d3.line<{x: number, y: number}>()
-          .x(p => p.x)
-          .y(p => p.y)
-          .curve(d3.curveCardinal.tension(0.3)); // Smooth curves
-        return line(d.history) || '';
+      if (d.history.length < 2) return '';
+      const line = d3.line<{x: number, y: number}>()
+        .x(p => p.x)
+        .y(p => p.y)
+        .curve(d3.curveCardinal.tension(0.3)); // Smooth curves
+      return line(d.history) || '';
       });
 
     // Draw particles with glow effect
@@ -114,10 +115,9 @@ const BrownianMotion: React.FC = () => {
       .append('circle')
       .attr('class', 'particle')
       .attr('r', 4)
-      .attr('fill', '#93c5fd') // blue-300
-      .attr('stroke', '#dbeafe') // blue-100
+      .attr('fill', '#fca5a5') // red-300
+      .attr('stroke', '#f87171') // red-400
       .attr('stroke-width', 1)
-      .style('filter', 'drop-shadow(0 0 3px #60a5fa)')
       .merge(circles)
       .attr('cx', d => d.x)
       .attr('cy', d => d.y);
@@ -150,8 +150,8 @@ const BrownianMotion: React.FC = () => {
       .attr('d', 'M 40 0 L 0 0 0 40')
       .attr('fill', 'none')
       .attr('stroke', 'white')
-      .attr('stroke-width', 0.5)
-      .attr('opacity', 0.1);
+      .attr('stroke-width', 0.4)
+      .attr('opacity', 0.3);
 
     // Background
     svg.append('rect')
