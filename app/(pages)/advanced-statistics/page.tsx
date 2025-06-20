@@ -11,23 +11,8 @@ import CalculateButton from '@/app/components/ui/calculate-button'
 import ClickableUnderline from '@/app/components/ui/clickable-underline'
 import AnovaDescription from '@/app/components/content/anova-description'
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
+import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
-
-
-
-// --- Placeholder Animations ---
-
-
-const RegressionAnimationPlaceholder = () => (
-  <div className="w-full h-full flex items-center justify-center bg-purple-900/20 rounded-lg p-8">
-    <div className="text-center">
-      <div className="text-6xl mb-4"></div>
-      <h3 className="text-2xl text-purple-300 font-semibold">Regression Analysis</h3>
-      <p className="text-sm text-gray-400 mt-2">(Placeholder)</p>
-    </div>
-  </div>
-)
-// ----------------------------
 
 const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
     return (
@@ -68,6 +53,27 @@ const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
         </div>
     )
 }
+// Create Stage Controls for the section animations stages
+const createStageControls = <T extends readonly string[]>(
+  stages: T,
+  currentStage: T[number],
+  setCurrentStage: (stage: T[number]) => void,
+  initialStage: T[number]
+) => ({
+  next: () => {
+    const currentIndex = stages.indexOf(currentStage)
+    if (currentIndex < stages.length - 1) {
+      setCurrentStage(stages[currentIndex + 1])
+    }
+  },
+  prev: () => {
+    const currentIndex = stages.indexOf(currentStage)
+    if (currentIndex > 0) {
+      setCurrentStage(stages[currentIndex - 1])
+    }
+  },
+  reset: () => setCurrentStage(initialStage)
+})
 
 const AdvancedStatistics = () => {
   const [activeSection, setActiveSection] = useState('anova')
@@ -78,7 +84,14 @@ const AdvancedStatistics = () => {
       fStatistic: 0,
       isSignificant: false,
   })
-  const [currentStage, setCurrentStage] = useState<typeof STAGES[number]>('intro')
+  const [regressionState, setRegressionState] = useState<RegressionState>({
+      stage: 'scatter',
+      slope: 0,
+      intercept: 0,
+      rSquared: 0,
+  })
+  const [currentTtestStage, setCurrentTtestStage] = useState<typeof STAGES[number]>('intro')
+  const [currentRegressionStage, setCurrentRegressionStage] = useState<typeof REGRESSION_STAGES[number]>('scatter')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const chapters = [
@@ -176,18 +189,24 @@ const AdvancedStatistics = () => {
         return (
           <TeachingMethodsAnova 
             onStateChange={setAnovaState} 
-            externalStage={currentStage}
-            onStageChange={setCurrentStage}
+            externalStage={currentTtestStage}
+            onStageChange={setCurrentTtestStage}
           />
         ) 
       case 'regression':
-        return <RegressionAnimationPlaceholder />
+        return (
+          <TeachingRegressionAnimation 
+            onStateChange={setRegressionState} 
+            externalStage={currentRegressionStage}
+            onStageChange={setCurrentRegressionStage}
+          />
+        )
       default:
         return (
           <TeachingMethodsAnova 
             onStateChange={setAnovaState} 
-            externalStage={currentStage}
-            onStageChange={setCurrentStage}
+            externalStage={currentTtestStage}
+            onStageChange={setCurrentTtestStage}
           />
         )
     }
@@ -204,23 +223,8 @@ const AdvancedStatistics = () => {
   }
 
   // --- Animation Control Functions ---
-  const nextStage = () => {
-    const currentIndex = STAGES.indexOf(currentStage)
-    if (currentIndex < STAGES.length - 1) {
-      setCurrentStage(STAGES[currentIndex + 1])
-    }
-  }
-
-  const prevStage = () => {
-    const currentIndex = STAGES.indexOf(currentStage)
-    if (currentIndex > 0) {
-      setCurrentStage(STAGES[currentIndex - 1])
-    }
-  }
-
-  const resetAnimation = () => {
-    setCurrentStage('intro')
-  }
+  const ttestControls = createStageControls(STAGES, currentTtestStage, setCurrentTtestStage, 'intro')
+  const regressionControls = createStageControls(REGRESSION_STAGES, currentRegressionStage, setCurrentRegressionStage, 'scatter')
 
   //Handle the Calculation, Computing Variance and Turning the Results into Animations. 
   const CalculateVariance = () => {
@@ -313,11 +317,11 @@ const AdvancedStatistics = () => {
                 <div className="mt-8 flex justify-start">
                   <div className="w-full max-w-md">
                     <NavProgressButton
-                      stage={currentStage}
+                      stage={currentTtestStage}
                       stages={STAGES as unknown as string[]}
-                      onPrevious={prevStage}
-                      onNext={nextStage}
-                      onReset={resetAnimation}
+                      onPrevious={ttestControls.prev}
+                      onNext={ttestControls.next}
+                      onReset={ttestControls.reset}
                       variant="relative"
                     />
                   </div>
@@ -337,6 +341,72 @@ const AdvancedStatistics = () => {
                       forecasting and prediction
                     </ClickableUnderline>, allowing us to see how variables influence each other.
                   </p>
+                  
+                  {/* Statistical Notation Table */}
+                  <div className="mt-6 bg-gray-900/50 rounded-lg border border-white/20 p-4">
+                    <h3 className="text-white text-lg font-semibold mb-3 border-b border-white/20 pb-2">
+                      Linear Regression Notation Guide
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Understanding the mathematical symbols used in linear regression calculations:
+                    </p>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-white/20">
+                            <th className="text-left py-2 px-3 text-blue-300 font-mono">Notation</th>
+                            <th className="text-left py-2 px-3 text-white">Meaning</th>
+                            <th className="text-left py-2 px-3 text-gray-400">Example Calculation</th>
+                          </tr>
+                        </thead>
+                        <tbody className="space-y-1">
+                          <tr className="border-b border-white/10">
+                            <td className="py-2 px-3 text-blue-300 font-mono">&lt;x&gt;</td>
+                            <td className="py-2 px-3 text-gray-300">Mean of x values</td>
+                            <td className="py-2 px-3 text-gray-400 font-mono text-xs">(x₁ + x₂ + ... + xₙ) / n</td>
+                          </tr>
+                          <tr className="border-b border-white/10">
+                            <td className="py-2 px-3 text-green-300 font-mono">&lt;y&gt;</td>
+                            <td className="py-2 px-3 text-gray-300">Mean of y values</td>
+                            <td className="py-2 px-3 text-gray-400 font-mono text-xs">(y₁ + y₂ + ... + yₙ) / n</td>
+                          </tr>
+                          <tr className="border-b border-white/10">
+                            <td className="py-2 px-3 text-purple-300 font-mono">&lt;xy&gt;</td>
+                            <td className="py-2 px-3 text-gray-300">Mean of x×y products</td>
+                            <td className="py-2 px-3 text-gray-400 font-mono text-xs">(x₁y₁ + x₂y₂ + ... + xₙyₙ) / n</td>
+                          </tr>
+                          <tr className="border-b border-white/10">
+                            <td className="py-2 px-3 text-orange-300 font-mono">&lt;x²&gt;</td>
+                            <td className="py-2 px-3 text-gray-300">Mean of x² values</td>
+                            <td className="py-2 px-3 text-gray-400 font-mono text-xs">(x₁² + x₂² + ... + xₙ²) / n</td>
+                          </tr>
+                          <tr className="border-b border-white/10">
+                            <td className="py-2 px-3 text-red-300 font-mono">&lt;x&gt;²</td>
+                            <td className="py-2 px-3 text-gray-300">Square of x mean</td>
+                            <td className="py-2 px-3 text-gray-400 font-mono text-xs">(&lt;x&gt;)²</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  <p className="mt-4">
+                    The animation demonstrates how to calculate these values step by step and build the regression line that best fits the data points.
+                  </p>
+                </div>
+
+                <div className="mt-8 flex justify-start">
+                  <div className="w-full max-w-md">
+                    <NavProgressButton
+                      stage={currentRegressionStage}
+                      stages={REGRESSION_STAGES as unknown as string[]}
+                      onPrevious={regressionControls.prev}
+                      onNext={regressionControls.next}
+                      onReset={regressionControls.reset}
+                      variant="relative"
+                    />
+                  </div>
                 </div>
               </section>
               </div>
