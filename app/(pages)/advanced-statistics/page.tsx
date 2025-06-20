@@ -9,10 +9,11 @@ import ChapterNavigation from '@/app/components/ui/chapter-navigation'
 import AnovaAnimations2 from '@/app/components/animations/ANOVA/anova-animations-2' // Assuming this is for F-Statistic
 import CalculateButton from '@/app/components/ui/calculate-button'
 import ClickableUnderline from '@/app/components/ui/clickable-underline'
-import AnovaDescription from '@/app/components/content/anova-description'
+import AnovaDescription from '@/app/components/content/anova-description'   
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
+import Introduction from '@/app/components/content/introduction'
 
 const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
     return (
@@ -95,9 +96,14 @@ const AdvancedStatistics = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   const chapters = [
-    { id: 'anova', title: 'ANOVA', number: '01' },
-    { id: 'ttest', title: 'Case Study', number: '02' },
-    { id: 'regression', title: 'Linear Model', number: '03' }
+    { id: 'introduction', title: 'The Basics', number: '01' },
+    { id: 'central-limit-theorem', title: 'Central Limit Theorem', number: '02' },
+    { id: 'estimation', title: 'Estimation and Confidence Intervals', number: '03' },
+    { id: 'hypothesis-testing', title: 'Hypothesis Testing', number: '04'},
+    { id: 'hypothesis-test-intro', title: '', number: '05' },
+    { id: 'anova', title: 'ANOVA', number: '06' },
+    { id: 'ttest', title: 'Case Study', number: '07' },
+    { id: 'regression', title: 'Linear Model', number: '08' }
   ]
 
   const contentRef = useRef<HTMLDivElement>(null)
@@ -232,7 +238,7 @@ const AdvancedStatistics = () => {
   }
 
   return (
-    <div className="bg-background text-foreground transition-colors duration-300" style={{ fontFamily: 'Aptos' }}>
+    <div className="bg-background text-foreground transition-colors duration-300 aptos-font">
       <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-6 md:px-4 py-4">
           <NavigationBar />
@@ -272,6 +278,10 @@ const AdvancedStatistics = () => {
                 isSidebarOpen ? 'max-w-none p-6 lg:pl-6 lg:pr-6 lg:py-12' : 'max-w-4xl mx-auto p-6 lg:p-12'
               }`}>
               
+              {/* --- Section 0: INTRODUCTION --- */}
+              <section id="introduction" className="min-h-screen relative">
+                <Introduction/>     
+              </section>
               {/* --- Section 1: ANOVA --- */}
               <section id="anova" ref={anovaRef} className="min-h-screen relative">
                 <h2 className="text-2xl font-bold text-white/90 mb-6">1. Understanding ANOVA</h2>

@@ -61,6 +61,7 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
       </button>
 
       {/* Desktop Full-Height Sidebar */}
+      {/* Desktop Full-Height Sidebar */}
       <motion.div
         initial={false}
         animate={{ 
@@ -73,42 +74,43 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
         <div className="p-8">
           <h3 className="text-white/60 text-xs uppercase tracking-wider font-medium mb-8">Chapters</h3>
           <div className="space-y-6">
-            {chapters.map((chapter) => (
-              <button
-                key={chapter.id}
-                onClick={() => handleSectionClick(chapter.id)}
-                className={`w-full text-left group transition-all duration-300 ${
-                  activeSection === chapter.id ? 'opacity-100' : 'opacity-70 hover:opacity-90'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-mono transition-all duration-300 ${
-                    activeSection === chapter.id 
-                      ? 'bg-white/20 text-white border border-white/30' 
-                      : 'bg-white/5 text-white/60 border border-white/10 group-hover:bg-white/10'
-                  }`}>
-                    {chapter.number}
-                  </div>
-                  <div>
-                    <div className={`font-medium transition-colors duration-300 ${
-                      activeSection === chapter.id ? 'text-white' : 'text-white/80 group-hover:text-white'
-                    }`}>
-                      {chapter.title}
-                    </div>
-                  </div>
-                </div>
-                {/* Progress indicator */}
-                <div className="mt-3 ml-14">
-                  <div className="w-full h-px bg-white/10">
-                    <div 
-                      className={`h-full bg-gradient-to-r from-white/40 to-white/20 transition-all duration-500 ${
-                        activeSection === chapter.id ? 'w-full' : 'w-0'
-                      }`}
-                    />
-                  </div>
-                </div>
-              </button>
-            ))}
+        {chapters.map((chapter) => (
+          <button
+            key={chapter.id}
+            onClick={() => handleSectionClick(chapter.id)}
+            className={`w-full text-left group transition-all duration-300 ${
+          activeSection === chapter.id ? 'opacity-100' : 'opacity-70 hover:opacity-90'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+          <div className={`w-10 h-10 flex-shrink-0 rounded-full grid place-items-center text-sm 
+            font-mono transition-all duration-300 ${
+              activeSection === chapter.id 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'bg-white/5 text-white/60 border border-white/10 group-hover:bg-white/10'
+            }`}>
+            {chapter.number}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className={`font-medium transition-colors duration-300 truncate ${
+              activeSection === chapter.id ? 'text-white' : 'text-white/80 group-hover:text-white'
+            }`}>
+              {chapter.title}
+            </div>
+          </div>
+            </div>
+            {/* Progress indicator */}
+            <div className="mt-3 ml-14">
+          <div className="w-full h-px bg-white/10">
+            <div 
+              className={`h-full bg-gradient-to-r from-white/40 to-white/20 transition-all duration-500 ${
+            activeSection === chapter.id ? 'w-full' : 'w-0'
+              }`}
+            />
+          </div>
+            </div>
+          </button>
+        ))}
           </div>
         </div>
       </motion.div>

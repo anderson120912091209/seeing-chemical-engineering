@@ -78,6 +78,7 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -131,6 +132,19 @@
   text-decoration-color: #81a8e7; 
   text-underline-offset: 2px;
   text-decoration-thickness: 2px;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos.woff2') format('woff2'),
+       url('/fonts/Aptos.ttf') format('truetype');
+  font-weight: light;
+  font-style: normal;
+  font-display: swap;
+}
+
+.aptos-font {
+  font-family: 'Aptos', Arial, sans-serif;
 }
 
 @layer base {
@@ -285,3 +299,4 @@ html {
     font-size: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
   }
 }
+  
