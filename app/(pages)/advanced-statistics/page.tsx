@@ -1,19 +1,31 @@
 'use client'
 
+//Import UI
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import NavigationBar from '@/app/components/navigation-bar'
 import TeachingMethodsAnova, { AnovaState, STAGES } from '@/app/components/animations/ANOVA/teaching-methods-anova'
 import NavProgressButton from '@/app/components/ui/nav-progress-button'
 import ChapterNavigation from '@/app/components/ui/chapter-navigation'
-import AnovaAnimations2 from '@/app/components/animations/ANOVA/anova-animations-2' // Assuming this is for F-Statistic
-import CalculateButton from '@/app/components/ui/calculate-button'
 import ClickableUnderline from '@/app/components/ui/clickable-underline'
-import AnovaDescription from '@/app/components/content/anova-description'   
+import { Splitter, SplitterPanel } from 'primereact/splitter'
+
+//Import Animations (Right)
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
-import { Splitter, SplitterPanel } from 'primereact/splitter'
+
+//Import Contents (Left Column)
 import Introduction from '@/app/components/content/introduction'
+import AnovaDescription from '@/app/components/content/anova-description'   
+
+//Import Utils Functions 
+import { 
+  createStageControls,
+  
+} from '@/lib/utils'
+
+
+
 
 const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
     return (
@@ -54,27 +66,7 @@ const AnovaInfoPanel = ({ stage, fStatistic, isSignificant }: AnovaState) => {
         </div>
     )
 }
-// Create Stage Controls for the section animations stages
-const createStageControls = <T extends readonly string[]>(
-  stages: T,
-  currentStage: T[number],
-  setCurrentStage: (stage: T[number]) => void,
-  initialStage: T[number]
-) => ({
-  next: () => {
-    const currentIndex = stages.indexOf(currentStage)
-    if (currentIndex < stages.length - 1) {
-      setCurrentStage(stages[currentIndex + 1])
-    }
-  },
-  prev: () => {
-    const currentIndex = stages.indexOf(currentStage)
-    if (currentIndex > 0) {
-      setCurrentStage(stages[currentIndex - 1])
-    }
-  },
-  reset: () => setCurrentStage(initialStage)
-})
+
 
 const AdvancedStatistics = () => {
   const [activeSection, setActiveSection] = useState('anova')
