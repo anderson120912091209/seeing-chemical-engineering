@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 // Mock ClickableUnderline component
-const ClickableUnderline = ({ children, color, onClick }) => (
+const ClickableUnderline = ({ children, color, onClick }: {
+  children: React.ReactNode;
+  color: string;
+  onClick?: () => void;
+}) => (
   <span 
     className={`underline cursor-pointer text-${color}-400 hover:text-${color}-300`}
     onClick={onClick}
@@ -80,10 +84,14 @@ const distributionData = [
   }
 ];
 
-const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }) => {
+const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
+  onBetweenClick?: () => void;
+  onWithinClick?: () => void;
+  onDistributionClick?: (distributionId: string, distributionName: string) => void;
+} = {}) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
 
-  const toggleExpanded = (id) => {
+  const toggleExpanded = (id: string) => {
     const newExpanded = new Set(expandedItems);
     if (newExpanded.has(id)) {
       newExpanded.delete(id);
@@ -93,7 +101,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }) =>
     setExpandedItems(newExpanded);
   };
 
-  const handleDistributionClick = (distribution) => {
+  const handleDistributionClick = (distribution: typeof distributionData[0]) => {
     // Toggle expansion
     toggleExpanded(distribution.id);
     
@@ -113,7 +121,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }) =>
           This page is designed for the engineers & students who already have a basic
           understanding of statistics and want to further explore advanced statistics with visualizations.
           This course assumes familiarity with basic statistical concepts and calculus. For some refresher on basic statistics, Brown University's{" "}
-          <ClickableUnderline color="blue" onClick={onBetweenClick}>
+          <ClickableUnderline color="blue" onClick={() => onBetweenClick?.()}>
             Seeing Theory
           </ClickableUnderline>{" "}
           is a really good source of reference. 
