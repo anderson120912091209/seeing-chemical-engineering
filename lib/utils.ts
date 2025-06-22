@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// ======= CHAPTER CONFIGURATIOn TYPES =======
+// ======= CHAPTER CONFIGURATION TYPES =======
 export interface ChapterConfig {
   id: string;
   title: string; 

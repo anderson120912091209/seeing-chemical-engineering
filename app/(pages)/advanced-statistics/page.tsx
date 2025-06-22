@@ -30,16 +30,25 @@ const AdvancedStatisticsPage = () => {
 // =========================================
 
   const [activeSection, setActiveSection] = useState("introduction")
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-
-  // Chapters Ref 
-  const animationContainerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const animationContainerRef = useRef<HTMLDivElement>(null)
 
   // Chapter configuration
   const chapters = [
+    //Chapter 1 Configuration 
     { title: "Introduction & The Basics", id: "introduction", number: "1" },
-    { title: "ANOVA", id: "anova", number: "2" },
+    //Chapter 2 Configuration 
+    { 
+      title: "Statistical Inference", 
+      id: "statistical-inference", 
+      number: "2",
+      subchapters: [
+        {title: "Testing Statistical Hypothesis", id: "chap-2-sub-1", number: "2.1"},
+        {title: "Inference on the Mean of a Population", id: "chap-2-sub-2", number: "2.2"},
+        {title: "Inference on the Variance of a Population" ,id: "chap-2-sub-3", number: "2.3"}
+      ]
+    },
+    //Chapter 3 Configuration 
     { title: "Regression", id: "regression", number: "3" }
   ]
 
@@ -55,14 +64,14 @@ const AdvancedStatisticsPage = () => {
       case 'introduction':
         return (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/60">Introduction animations</p>
+            <p className="text-white/60">Commonly Used Distributions</p>
             {/* Replace with actual animation component */}
           </div>
         )
-      case 'anova':
+      case 'stistical-inference':
         return (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/60">ANOVA animations</p>
+            <p className="text-white/60">Statistical Inference</p>
             {/* Replace with <AnovaAnimation /> */}
           </div>
         )
@@ -99,23 +108,16 @@ return (
         chapters={chapters}
         activeSection={activeSection}
         onSectionClick={handleSectionNavigation}
-        onSidebarToggle={setIsSidebarOpen}
       />
       <main 
         className="pt-20 h-screen"
-        style={{ 
-          paddingLeft: isSidebarOpen ? '270px' : '0px',
-          transition: 'padding-left 0.3s ease-in-out'
-        }}
       >
         <Splitter className="h-full">
           {/* Left Column */}
           <SplitterPanel size={50} minSize={30}> 
-            <div ref={contentRef} className="h-full overflow-y-auto custom-scrollbar">
-              <div className={`space-y-12 transition-all duration-300 ${
-                isSidebarOpen ? 'max-w-none p-6 lg:pl-6 lg:py-12' : 'max-w-4xl mx-auto p-6 lg:p-12'
-              }`}>
-                {/*Scrollable Content with ./Content Integrations*/}
+                          <div ref={contentRef} className="h-full overflow-y-auto custom-scrollbar">
+                <div className="space-y-12 p-6 lg:p-12">
+                  {/*Scrollable Content with ./Content Integrations*/}
                 <section>
                   <Introduction />
                 </section>
