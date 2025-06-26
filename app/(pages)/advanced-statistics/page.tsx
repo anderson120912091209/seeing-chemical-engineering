@@ -13,6 +13,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 //Import Animations (Right)
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
+import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/chapter-1-intro'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/introduction'
@@ -63,10 +64,7 @@ const AdvancedStatisticsPage = () => {
     switch(activeSection) {
       case 'introduction':
         return (
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/60">Commonly Used Distributions</p>
-            {/* Replace with actual animation component */}
-          </div>
+          <BinomialBasketballAnimation />
         )
       case 'stistical-inference':
         return (
