@@ -127,10 +127,9 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
           is a really good source of reference. 
           <br/>
           Let's get started with some distributions 
-          <br/>
-          <p className="text-white/60">
-            (Click on the expandable bullet points for explanations and animations)
-          </p>
+        </p>
+        <p className="text-white/60">
+          (Click on the expandable bullet points for explanations and animations)
         </p>
         
         <h3 className="text-xl font-semibold text-white/80 mb-2">
