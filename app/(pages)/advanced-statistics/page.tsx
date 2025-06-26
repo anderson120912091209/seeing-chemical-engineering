@@ -66,7 +66,7 @@ const AdvancedStatisticsPage = () => {
         return (
           <BinomialBasketballAnimation />
         )
-      case 'stistical-inference':
+      case 'statistical-inference':
         return (
           <div className="w-full h-full flex items-center justify-center">
             <p className="text-white/60">Statistical Inference</p>
