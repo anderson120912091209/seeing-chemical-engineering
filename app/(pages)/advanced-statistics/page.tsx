@@ -13,10 +13,10 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 //Import Animations (Right)
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
-import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/chapter-1-intro'
+import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/chapter-1-intro-animation'
 
 //Import Contents (Left Column)
-import Introduction from '@/app/components/content/introduction'
+import Introduction from '@/app/components/content/chapter-1-intro-content'  
 import AnovaDescription from '@/app/components/content/anova-description'   
 
 //Import Utils Functions 
@@ -37,7 +37,18 @@ const AdvancedStatisticsPage = () => {
   // Chapter configuration
   const chapters = [
     //Chapter 1 Configuration 
-    { title: "Introduction & The Basics", id: "introduction", number: "1" },
+    { title: "Introduction & The Basics", 
+      id: "introduction", 
+      number: "1",
+      subchapters: [
+        { title: "Binomial Distribution", id: "normal", number: "1.1" },
+        { title: "Normal Distribution", id: "binomial", number: "1.2" },
+        { title: "Poisson/Exponential Distribution", id: "poisson", number: "1.3" },
+        { title: "Gamma/Beta Distribution", id: "gamma-beta", number: "1.4" },
+        { title: "Chi-Squared Distribution", id: "chi-squared", number: "1.5" },
+        { title: "Student's t-Distribution", id: "t-distribution", number: "1.6" }
+      ]
+    },
     //Chapter 2 Configuration 
     { 
       title: "Statistical Inference", 

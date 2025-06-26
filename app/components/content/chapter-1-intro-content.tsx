@@ -116,7 +116,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
       <h2 className="text-3xl font-bold text-white/90 mb-6">01. Introduction & Basics</h2>
       <div className="space-y-4 text-md text-gray-300 font-light">
         <p>
-          Welcome to the Statistics Page of Seeing Science! 
+          <span className="font-medium"> Welcome to the Statistics Page of Seeing Science!</span>
           <br/>
           This page is designed for the engineers & students who already have a basic
           understanding of statistics and want to further explore advanced statistics with visualizations.

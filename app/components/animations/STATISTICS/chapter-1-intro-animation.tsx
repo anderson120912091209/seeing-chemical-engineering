@@ -187,20 +187,7 @@ const BinomialDistributionAnimation = () => {
       .style("font-size", "12px")
       .style("font-family", "Aptos, system-ui, sans-serif");
     
-    // Theoretical distribution (minimal outline)
-    g.selectAll(".theoretical-bar")
-      .data(theoreticalData)
-      .enter()
-      .append("rect")
-      .attr("class", "theoretical-bar")
-      .attr("x", d => xScale(d.k.toString()) || 0)
-      .attr("y", d => yScale(d.theoreticalCount))
-      .attr("width", xScale.bandwidth())
-      .attr("height", d => chartHeight - yScale(d.theoreticalCount))
-      .attr("fill", "none")
-      .attr("stroke", colors.data)
-      .attr("stroke-width", 1.5)
-      .attr("opacity", 0.6)
+    // Note: Theoretical distribution outline removed - histogram builds from experimental results only
 
     // Experimental bars (start at 0)
     g.selectAll(".experimental-bar")
@@ -226,29 +213,50 @@ const BinomialDistributionAnimation = () => {
     const svg = d3.select(svgRef.current)
     const { g, xScale, yScale } = initializeVisualization()!
 
-    // Experiment counter
+    // Prominent success counter in center
+    const successCounterGroup = svg.append("g")
+      .attr("transform", `translate(${width / 2}, ${height / 2 - 50})`)
+
+    // Large success number display
+    const successNumberDisplay = successCounterGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("text-anchor", "middle")
+      .style("fill", colors.accent)
+      .style("font-family", "Aptos, system-ui, sans-serif")
+      .style("font-size", "48px")
+      .style("font-weight", "600")
+      .style("opacity", 0)
+      .text("0")
+
+    // Success counter label
+    const successLabel = successCounterGroup.append("text")
+      .attr("x", 0)
+      .attr("y", 35)
+      .attr("text-anchor", "middle")
+      .style("fill", colors.textMuted)
+      .style("font-family", "Aptos, system-ui, sans-serif")
+      .style("font-size", "14px")
+      .style("font-weight", "400")
+      .style("text-transform", "uppercase")
+      .style("letter-spacing", "0.1em")
+      .style("opacity", 0)
+      .text("SUCCESSES")
+
+    // Experiment counter (smaller, bottom)
     const counterGroup = svg.append("g")
-      .attr("transform", `translate(${margin.left}, ${height - 40})`)
+      .attr("transform", `translate(${margin.left}, ${height - 25})`)
 
     const experimentCounter = counterGroup.append("text")
       .attr("x", 0)
       .attr("y", 0)
       .style("fill", colors.textMuted)
       .style("font-family", "Aptos, system-ui, sans-serif")
-      .style("font-size", "12px")
+      .style("font-size", "11px")
       .style("font-weight", "400")
       .style("text-transform", "uppercase")
       .style("letter-spacing", "0.05em")
       .text("experiment: 0 / " + numExperiments)
-
-    const currentResultText = counterGroup.append("text")
-      .attr("x", 0)
-      .attr("y", 20)
-      .style("fill", colors.text)
-      .style("font-family", "Aptos, system-ui, sans-serif")
-      .style("font-size", "13px")
-      .style("font-weight", "400")
-      .text("-")
 
     // Keep track of counts for each outcome
     const outcomeCounts = new Array(n + 1).fill(0)
@@ -260,7 +268,6 @@ const BinomialDistributionAnimation = () => {
       
       // Run single experiment
       const successCount = runSingleExperiment()
-      outcomeCounts[successCount]++
       
       const result = {
         experimentNumber: exp + 1,
@@ -268,32 +275,158 @@ const BinomialDistributionAnimation = () => {
       }
       results.push(result)
 
-      // Update counters
+      // Update experiment counter
       experimentCounter.text(`experiment: ${exp + 1} / ${numExperiments}`)
-      currentResultText.text(`${successCount}/${n}`)
 
-      // Update histogram
-      g.selectAll(".experimental-bar")
-        .data(outcomeCounts)
-        .transition()
-        .duration(50)
-        .attr("y", (d: number) => yScale(d))
-        .attr("height", (d: number) => chartHeight - yScale(d))
+      // Calculate speed factor - gradual acceleration from 1.0 to 0.05
+      const speedFactor = exp < 5 
+        ? 1.0 - (exp * 0.15)  // Experiments 1-5: 1.0 → 0.85 → 0.70 → 0.55 → 0.40
+        : Math.max(0.05, 0.4 - ((exp - 5) / numExperiments) * 0.35)  // Experiments 6+: 0.40 → 0.05
+      
+      const isDetailedPhase = exp < 10
+      
+      if (isDetailedPhase) {
+        // DETAILED ANIMATION WITH GRADUAL SPEED-UP
+        
+        // STEP 1: Show the success number prominently (gets faster)
+        const emphasisDuration = Math.max(100, 200 * speedFactor)
+        const pulseDuration = Math.max(100, 200 * speedFactor)
+        
+        successNumberDisplay
+          .text(successCount)
+          .style("opacity", 0)
+          .transition()
+          .duration(emphasisDuration)
+          .style("opacity", 1)
+          .style("font-size", "56px")
+          .transition()
+          .duration(pulseDuration)
+          .style("font-size", "48px")
 
-      // Highlight current result briefly
-      const currentBar = g.select(`.experimental-bar:nth-child(${successCount + n + 8})`) // offset for grid lines and axes
-      currentBar
-        .transition()
-        .duration(100)
-        .attr("fill", colors.accent)
-        .transition()
-        .duration(100)
-        .attr("fill", colors.data)
+        successLabel
+          .style("opacity", 0)
+          .transition()
+          .duration(emphasisDuration)
+          .style("opacity", 1)
 
-      // Variable delay - faster as we go, and faster for larger experiment counts
-      const baseDelay = numExperiments > 300? 20 : numExperiments > 200 ? 50 : numExperiments > 100 ? 80 : 120
-      const delay = Math.max(5, baseDelay - (exp / numExperiments) * (baseDelay * 0.8))
-      await new Promise(resolve => setTimeout(resolve, delay))
+        // Wait for emphasis (gets shorter)
+        const waitTime = Math.max(200, 400 * speedFactor)
+        await new Promise(resolve => setTimeout(resolve, waitTime))
+
+        // STEP 2: Animate the number moving to the histogram (gets faster)
+        const movingNumber = svg.append("text")
+          .attr("x", width / 2)
+          .attr("y", height / 2 - 50)
+          .attr("text-anchor", "middle")
+          .style("fill", colors.accent)
+          .style("font-family", "Aptos, system-ui, sans-serif")
+          .style("font-size", "24px")
+          .style("font-weight", "600")
+          .style("opacity", 1)
+          .text(successCount)
+
+        // Target position for the moving number
+        const targetX = (xScale(successCount.toString()) || 0) + xScale.bandwidth() / 2 + margin.left
+        const targetY = margin.top + chartHeight - 20
+
+        // Animate movement (gets faster)
+        const movementDuration = Math.max(200, 600 * speedFactor)
+        movingNumber
+          .transition()
+          .duration(movementDuration)
+          .attr("x", targetX)
+          .attr("y", targetY)
+          .style("font-size", "16px")
+          .style("opacity", 0.8)
+
+        // STEP 3: Update histogram after the number arrives (gets faster)
+        setTimeout(() => {
+          outcomeCounts[successCount]++
+          
+          const histogramDuration = Math.max(150, 300 * speedFactor)
+          g.selectAll(".experimental-bar")
+            .data(outcomeCounts)
+            .transition()
+            .duration(histogramDuration)
+            .attr("y", (d: number) => yScale(d))
+            .attr("height", (d: number) => chartHeight - yScale(d))
+
+          // Highlight the updated bar (gets faster)
+          const highlightDuration = Math.max(100, 200 * speedFactor)
+          const currentBar = g.select(`.experimental-bar:nth-child(${successCount + 4})`)
+          currentBar
+            .transition()
+            .duration(highlightDuration)
+            .attr("fill", colors.accent)
+            .transition()
+            .duration(highlightDuration * 1.5)
+            .attr("fill", colors.data)
+
+          // Remove the moving number
+          movingNumber.remove()
+        }, movementDuration)
+
+        // STEP 4: Fade out the main counter (gets faster)
+        const fadeDelay = Math.max(300, 800 * speedFactor)
+        setTimeout(() => {
+          const fadeDuration = Math.max(100, 200 * speedFactor)
+          successNumberDisplay
+            .transition()
+            .duration(fadeDuration)
+            .style("opacity", 0.3)
+          
+          successLabel
+            .transition()
+            .duration(fadeDuration)
+            .style("opacity", 0.3)
+        }, fadeDelay)
+
+        // Total wait time decreases progressively
+        const totalWaitTime = Math.max(600, 1400 * speedFactor)
+        await new Promise(resolve => setTimeout(resolve, totalWaitTime))
+        
+      } else {
+        // ACCELERATED ANIMATION WITH CONTINUED SPEED-UP
+        
+        // Quick flash of the success number (continues to get faster)
+        const flashDuration = Math.max(30, 100 * speedFactor)
+        successNumberDisplay
+          .text(successCount)
+          .style("opacity", 1)
+          .style("font-size", "48px")
+          .transition()
+          .duration(flashDuration)
+          .style("opacity", 0.6)
+
+        successLabel.style("opacity", 0.6)
+
+        // Update count immediately
+        outcomeCounts[successCount]++
+        
+        // Quick histogram update (continues to get faster)
+        const histogramDuration = Math.max(20, 80 * speedFactor)
+        g.selectAll(".experimental-bar")
+          .data(outcomeCounts)
+          .transition()
+          .duration(histogramDuration)
+          .attr("y", (d: number) => yScale(d))
+          .attr("height", (d: number) => chartHeight - yScale(d))
+
+        // Brief highlight (continues to get faster)
+        const highlightDuration = Math.max(15, 60 * speedFactor)
+        const currentBar = g.select(`.experimental-bar:nth-child(${successCount + 4})`)
+        currentBar
+          .transition()
+          .duration(highlightDuration)
+          .attr("fill", colors.accent)
+          .transition()
+          .duration(highlightDuration)
+          .attr("fill", colors.data)
+
+        // Delay continues to decrease
+        const delay = Math.max(10, numExperiments > 100 ? 25 * speedFactor : 40 * speedFactor)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
     }
 
     setExperiments(results)
@@ -352,7 +485,7 @@ const BinomialDistributionAnimation = () => {
       {/* Header */}
       <div className="text-center mb-8 px-6">
         <h3 className="text-lg font-medium mb-3" style={{ color: colors.text, fontFamily: 'Aptos, system-ui, sans-serif', letterSpacing: '-0.02em' }}>
-          Binomial Distribution
+          Binomial Trials 
         </h3>
         <p className="text-sm" style={{ color: colors.textMuted, fontFamily: 'Aptos, system-ui, sans-serif', fontWeight: '400' }}>
           Repeated experiments visualization
@@ -483,9 +616,9 @@ const BinomialDistributionAnimation = () => {
               </label>
                              <input
                  type="range"
-                 min="50"
-                 max="500"
-                 step="50"
+                 min="1"
+                 max="300"
+                 step="1"
                  value={numExperiments}
                  onChange={(e) => setNumExperiments(parseInt(e.target.value))}
                  className="w-full h-1 rounded appearance-none cursor-pointer focus:outline-none"
