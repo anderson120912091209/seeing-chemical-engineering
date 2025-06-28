@@ -13,7 +13,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 //Import Animations (Right)
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
-import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/chapter-1-intro-animation'
+import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/CHAPTER-1/binomial-distribution'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/chapter-1-intro-content'  
@@ -24,6 +24,9 @@ import {
   createStageControls,
   
 } from '@/lib/utils'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
 
 const AdvancedStatisticsPage = () => {
 // =========================================
@@ -31,6 +34,7 @@ const AdvancedStatisticsPage = () => {
 // =========================================
 
   const [activeSection, setActiveSection] = useState("introduction")
+  const [activeSubchapter, setActiveSubchapter] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const animationContainerRef = useRef<HTMLDivElement>(null)
 
@@ -60,13 +64,17 @@ const AdvancedStatisticsPage = () => {
         {title: "Inference on the Variance of a Population" ,id: "chap-2-sub-3", number: "2.3"}
       ]
     },
+    
     //Chapter 3 Configuration 
-    { title: "Regression", id: "regression", number: "3" }
+    { title: "Regression", 
+      id: "regression", 
+      number: "3" }
   ]
 
   // Navigation handler
-  const handleSectionNavigation = (section: string) => {
+  const handleSectionNavigation = (section: string, subchapter?: string) => {
     setActiveSection(section)
+    setActiveSubchapter(subchapter || null)
   }
 
   /* Animation Rendering Function 
@@ -74,9 +82,36 @@ const AdvancedStatisticsPage = () => {
   const renderAnimation = () => {
     switch(activeSection) {
       case 'introduction':
-        return (
-          <BinomialBasketballAnimation />
-        )
+        switch(activeSubchapter) {
+          case 'binomial':
+            return (
+              <BinomialBasketballAnimation />
+            )
+          case 'normal':
+            return (
+              <NormalDistributionAnimation /> 
+            )
+          case 'poisson':
+            return (
+              <PoissonDistributionAnimation />
+            )
+          case 'gamma-beta':
+            return (
+              <GammaBetaDistributionAnimation />
+            )
+          case 'chi-squared': 
+            return (
+              <ChiSquaredDistributionAnimation />
+            )
+          case 't-distribution':
+            return (
+              <TDistributionAnimation />
+            )
+          default:
+            return (
+              <BinomialBasketballAnimation />
+            )
+        }
       case 'statistical-inference':
         return (
           <div className="w-full h-full flex items-center justify-center">
@@ -145,6 +180,7 @@ return (
                   <div ref={animationContainerRef} className="w-full flex-grow relative">
                     {renderAnimation()}
                   </div>
+
                 </div>
               </div>        
             </section>

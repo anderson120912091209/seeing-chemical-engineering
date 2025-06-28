@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import VarianceCalculationAnimation from './variance-calculation-animation'
 
 // --- Interfaces ---
 interface Student {

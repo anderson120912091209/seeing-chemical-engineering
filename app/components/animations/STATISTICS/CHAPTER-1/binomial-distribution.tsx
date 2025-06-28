@@ -4,9 +4,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import { Play, RotateCcw, Settings } from 'lucide-react'
 
-export const DISTRIBUTIONS = ['binomial', 'normal'] as const
-type Stage = typeof DISTRIBUTIONS[number]
-
 interface ExperimentResult {
   experimentNumber: number
   successCount: number
