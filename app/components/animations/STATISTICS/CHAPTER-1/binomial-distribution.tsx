@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
-import { Play, RotateCcw, Settings } from 'lucide-react'
+import { Play, RotateCcw, Settings, ArrowRight, ArrowLeft } from 'lucide-react'
+import LatexRenderer from '@/app/components/ui/latex-renderer'
 
 interface ExperimentResult {
   experimentNumber: number
@@ -18,6 +19,8 @@ const BinomialDistributionAnimation = () => {
   const [isAnimating, setIsAnimating] = useState(false)
   const [currentExperiment, setCurrentExperiment] = useState(0)
   const [showSettings, setShowSettings] = useState(false)
+  const [stage, setStage] = useState(0) // 0: simulation, 1: analysis
+  const [hoveredK, setHoveredK] = useState<number | null>(null)
 
   const width = 800
   const height = 600
@@ -25,10 +28,10 @@ const BinomialDistributionAnimation = () => {
   const chartWidth = width - margin.left - margin.right
   const chartHeight = height - margin.top - margin.bottom
 
-  // Minimal dark theme palette
+  // Minimal dark theme palette using exact theme colors
   const colors = {
-    background: '#0a0a0a',
-    surface: '#151515',
+    background: 'oklch(0.19 0 0)',  // Exact same as theme background
+    surface: 'oklch(0.23 0 0)',     // Exact same as theme card color
     border: '#2a2a2a',
     text: '#e5e5e5',
     textMuted: '#888888',
@@ -200,6 +203,77 @@ const BinomialDistributionAnimation = () => {
       .attr("opacity", 0.9)
 
     return { g, xScale, yScale }
+  }
+
+  const setupAnalysisStage = () => {
+    const svg = d3.select(svgRef.current)
+    if (!svg.node() || experiments.length === 0) return
+
+    // Remove existing analysis tooltip if it exists
+    d3.select("body").selectAll(".analysis-tooltip").remove()
+
+    // Create enhanced tooltip for analysis
+    const analysisTooltip = d3.select("body")
+      .append("div")
+      .attr("class", "analysis-tooltip")
+      .style("position", "absolute")
+      .style("background", colors.surface)
+      .style("border", `1px solid ${colors.border}`)
+      .style("border-radius", "6px")
+      .style("padding", "12px")
+      .style("color", colors.text)
+      .style("font-size", "12px")
+      .style("font-family", "Aptos, system-ui, sans-serif")
+      .style("pointer-events", "none")
+      .style("opacity", 0)
+      .style("z-index", "1000")
+      .style("box-shadow", "0 4px 12px rgba(0,0,0,0.3)")
+
+    // Count frequencies for each outcome
+    const frequencies = new Array(n + 1).fill(0)
+    experiments.forEach(exp => {
+      frequencies[exp.successCount]++
+    })
+
+    // Add enhanced hover interactions
+    svg.selectAll(".experimental-bar")
+      .on("mouseover", function(event, d) {
+        const k = parseInt(d3.select(this).attr("data-k") || "0")
+        const frequency = frequencies[k]
+        const empiricalProb = frequency / experiments.length
+        const theoreticalProb = binomialPMF(k, n, p)
+        const difference = Math.abs(empiricalProb - theoreticalProb)
+        const percentDiff = theoreticalProb > 0 ? (difference / theoreticalProb * 100) : 0
+
+        // Update hovered k value to highlight in equation
+        setHoveredK(k)
+
+        // Highlight the bar
+        d3.select(this).attr("fill", colors.accent)
+
+        // Show enhanced tooltip
+        analysisTooltip
+          .style("opacity", 1)
+          .html(`
+            <div style="margin-bottom: 8px;"><strong>k = ${k} successes</strong></div>
+            <div style="margin-bottom: 4px;">Frequency: ${frequency} / ${experiments.length}</div>
+            <div style="margin-bottom: 4px;">Empirical P(X=${k}): <span style="color: #60a5fa;">${empiricalProb.toFixed(4)}</span></div>
+            <div style="margin-bottom: 4px;">Theoretical P(X=${k}): <span style="color: #34d399;">${theoreticalProb.toFixed(4)}</span></div>
+            <div style="font-size: 11px; color: ${colors.textMuted};">Difference: ${percentDiff.toFixed(1)}%</div>
+          `)
+          .style("left", `${event.pageX + 15}px`)
+          .style("top", `${event.pageY - 10}px`)
+      })
+      .on("mousemove", function(event) {
+        analysisTooltip
+          .style("left", `${event.pageX + 15}px`)
+          .style("top", `${event.pageY - 10}px`)
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("fill", colors.data)
+        analysisTooltip.style("opacity", 0)
+        setHoveredK(null)
+      })
   }
 
   const animateExperiments = async () => {
@@ -431,15 +505,21 @@ const BinomialDistributionAnimation = () => {
 
     const tooltip = svg.select<SVGGElement>(".bar-tooltip");
 
-    g.selectAll<SVGRectElement, { k: number, count: number }>(".experimental-bar")
-      .data(outcomeCounts.map((count, k) => ({ k, count })))
+    // Store the counts as data attributes for later use
+    g.selectAll(".experimental-bar")
+      .data(outcomeCounts)
+      .each(function(d, i) {
+        d3.select(this).attr("data-count", d.toString()).attr("data-k", i.toString());
+      })
       .on("mouseover", function(event, d) {
-        if (d.count > 0) {
-          const xPos = (xScale(d.k.toString()) || 0) + xScale.bandwidth() / 2 + margin.left;
-          const yPos = yScale(d.count) + margin.top;
+        const count = d as number;
+        const k = d3.select(this).attr("data-k");
+        if (count > 0) {
+          const xPos = (xScale(k) || 0) + xScale.bandwidth() / 2 + margin.left;
+          const yPos = yScale(count) + margin.top;
 
           tooltip.attr("transform", `translate(${xPos - 40}, ${yPos})`);
-          tooltip.select("text").text(`Count: ${d.count}`);
+          tooltip.select("text").text(`Count: ${count}`);
           tooltip.transition().duration(200).style("opacity", 1);
 
           d3.select(this).attr("fill", colors.dataHighlight);
@@ -470,6 +550,10 @@ const BinomialDistributionAnimation = () => {
     setExperiments([])
     setCurrentExperiment(0)
     setIsAnimating(false)
+    setStage(0)
+    setHoveredK(null)
+    // Clean up analysis tooltips
+    d3.select("body").selectAll(".analysis-tooltip").remove()
     initializeVisualization()
   }
 
@@ -477,17 +561,34 @@ const BinomialDistributionAnimation = () => {
     initializeVisualization()
   }, [n, p, numExperiments])
 
+  useEffect(() => {
+    // Reset hoveredK when changing stages
+    setHoveredK(null)
+    
+    // Setup analysis stage if we're in stage 1 and have data
+    if (stage === 1 && experiments.length > 0) {
+      setupAnalysisStage()
+    } else {
+      // Clear analysis tooltips if not in analysis stage
+      d3.select("body").selectAll(".analysis-tooltip").remove()
+    }
+  }, [stage, experiments.length])
+
   return (
-    <div className="w-full h-full flex flex-col" style={{ backgroundColor: colors.background, fontFamily: 'Aptos, system-ui, sans-serif' }}>
-      {/* Header */}
-      <div className="text-center mb-8 px-6">
-        <h3 className="text-lg font-medium mb-3" style={{ color: colors.text, fontFamily: 'Aptos, system-ui, sans-serif', letterSpacing: '-0.02em' }}>
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: colors.background, fontFamily: 'Inter, system-ui, sans-serif' }}>
+      {/* Fixed Header */}
+      <div className="text-center px-6 py-4 flex-shrink-0">
+        <h3 className="text-lg font-medium mb-2 academic-heading" style={{ color: colors.text }}>
           Binomial Trials 
         </h3>
-        <p className="text-sm" style={{ color: colors.textMuted, fontFamily: 'Aptos, system-ui, sans-serif', fontWeight: '400' }}>
+        <p className="text-sm" style={{ color: colors.textMuted, fontFamily: 'Inter, system-ui, sans-serif', fontWeight: '400' }}>
           Repeated experiments visualization
         </p>
       </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6">
 
       {/* Controls */}
       <div className="flex justify-center items-center gap-3 mb-8">
@@ -499,7 +600,7 @@ const BinomialDistributionAnimation = () => {
             color: showSettings ? colors.accent : colors.text,
             border: `1px solid ${colors.border}`,
             borderRadius: '6px',
-            fontFamily: 'Aptos, system-ui, sans-serif',
+            fontFamily: 'JetBrains Mono, monospace',
             fontSize: '14px',
             fontWeight: '400',
             outline: 'none'
@@ -518,7 +619,7 @@ const BinomialDistributionAnimation = () => {
             color: colors.background,
             border: 'none',
             borderRadius: '6px',
-            fontFamily: 'Aptos, system-ui, sans-serif',
+            fontFamily: 'JetBrains Mono, monospace',
             fontSize: '14px',
             fontWeight: '500'
           }}
@@ -535,7 +636,7 @@ const BinomialDistributionAnimation = () => {
             color: colors.textMuted,
             border: `1px solid ${colors.border}`,
             borderRadius: '6px',
-            fontFamily: 'Aptos, system-ui, sans-serif',
+            fontFamily: 'JetBrains Mono, monospace',
             fontSize: '14px',
             fontWeight: '400'
           }}
@@ -543,6 +644,47 @@ const BinomialDistributionAnimation = () => {
           <RotateCcw className="w-4 h-4" />
           Reset
         </button>
+
+        {/* Stage Navigation */}
+        {experiments.length > 0 && !isAnimating && (
+          <>
+            <button
+              onClick={() => setStage(0)}
+              disabled={stage === 0}
+              className="flex items-center gap-2 px-4 py-2 transition-all duration-200 hover:bg-opacity-80 disabled:opacity-50"
+              style={{ 
+                backgroundColor: stage === 0 ? colors.surface : 'transparent',
+                color: stage === 0 ? colors.accent : colors.text,
+                border: `1px solid ${colors.border}`,
+                borderRadius: '6px',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '14px',
+                fontWeight: '400'
+              }}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Simulation
+            </button>
+
+            <button
+              onClick={() => setStage(1)}
+              disabled={stage === 1}
+              className="flex items-center gap-2 px-4 py-2 transition-all duration-200 hover:bg-opacity-80 disabled:opacity-50"
+              style={{ 
+                backgroundColor: stage === 1 ? colors.surface : 'transparent',
+                color: stage === 1 ? colors.accent : colors.text,
+                border: `1px solid ${colors.border}`,
+                borderRadius: '6px',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '14px',
+                fontWeight: '400'
+              }}
+            >
+              Analysis
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* Settings Panel */}
@@ -554,9 +696,8 @@ const BinomialDistributionAnimation = () => {
         }}>
           <div className="grid grid-cols-3 gap-6">
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ 
+              <label className="block text-xs font-medium mb-2 technical-mono" style={{ 
                 color: colors.textMuted, 
-                fontFamily: 'Aptos, system-ui, sans-serif',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
@@ -578,9 +719,8 @@ const BinomialDistributionAnimation = () => {
                />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ 
+              <label className="block text-xs font-medium mb-2 technical-mono" style={{ 
                 color: colors.textMuted, 
-                fontFamily: 'Aptos, system-ui, sans-serif',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
@@ -603,9 +743,8 @@ const BinomialDistributionAnimation = () => {
                />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ 
+              <label className="block text-xs font-medium mb-2 technical-mono" style={{ 
                 color: colors.textMuted, 
-                fontFamily: 'Aptos, system-ui, sans-serif',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em'
               }}>
@@ -631,6 +770,65 @@ const BinomialDistributionAnimation = () => {
         </div>
       )}
 
+      {/* Analysis Stage - KaTeX Equation */}
+      {stage === 1 && (
+        <div className="mx-6 mb-6 p-4 text-center" style={{ 
+          backgroundColor: colors.surface, 
+          borderRadius: '8px', 
+          border: `1px solid ${colors.border}`
+        }}>
+          <div className="mb-3 technical-mono" style={{ color: colors.textMuted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            Binomial Probability Mass Function
+          </div>
+          <div className="text-white">
+            {hoveredK !== null ? (
+              <LatexRenderer math={`P(X=${hoveredK}) = \\binom{${n}}{\\color{#60a5fa}{${hoveredK}}} ${p}^{\\color{#60a5fa}{${hoveredK}}} (1-${p})^{${n}-\\color{#60a5fa}{${hoveredK}}}`} inline={false} />
+            ) : (
+              <LatexRenderer math={`P(X=k) = \\binom{${n}}{k} ${p}^k (1-${p})^{${n}-k}`} inline={false} />
+            )}
+          </div>
+          
+          {/* Always visible calculation box */}
+          <div className="mt-3 p-3 mx-auto" style={{ 
+            backgroundColor: colors.background, 
+            borderRadius: '6px', 
+            border: `1px solid ${colors.border}`,
+            height: '50px',
+            width: '260px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            {hoveredK !== null ? (
+              <div style={{ 
+                color: colors.accent, 
+                fontSize: '14px', 
+                fontWeight: 'bold', 
+                textAlign: 'center',
+                fontFamily: 'monospace',
+                width: '100%'
+              }}>
+                P(X={hoveredK}) = {binomialPMF(hoveredK, n, p).toFixed(4)}
+              </div>
+            ) : (
+              <div style={{ 
+                color: colors.textMuted, 
+                fontSize: '14px', 
+                textAlign: 'center', 
+                fontStyle: 'italic',
+                fontFamily: 'monospace',
+                width: '100%'
+              }}>
+                Hover on bars to calculate
+              </div>
+            )}
+          </div>
+          <div className="mt-2" style={{ color: colors.textMuted, fontSize: '11px', fontFamily: 'Inter, system-ui, sans-serif' }}>
+            where n={n}, p={p.toFixed(2)}. Hover over bars to see specific k values and computed probabilities.
+          </div>
+        </div>
+      )}
+
       {/* Main Visualization */}
       <div className="flex-1 flex items-center justify-center">
         <svg
@@ -640,7 +838,8 @@ const BinomialDistributionAnimation = () => {
         />
       </div>
 
-
+        </div>
+      </div>
     </div>
   )
 }

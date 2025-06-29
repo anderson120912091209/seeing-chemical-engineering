@@ -54,22 +54,22 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
       {/* Desktop Sidebar Toggle Button - Now in top left corner */}
       <button
         onClick={handleSidebarToggle}
-        className="hidden lg:block fixed left-4 top-24 z-40 
-        bg-black/60 backdrop-blur-md border border-white/20 rounded-lg p-3 
-        text-white/80 hover:text-white hover:bg-black/70 hover:border-white/30 shadow-lg transition-all duration-300"
+        className="hidden lg:block fixed left-4 top-20 z-40 
+        bg-black/60 backdrop-blur-md border border-white/20 rounded-lg p-2 
+        text-white/50 hover:text-white/70 hover:bg-black/70 hover:border-white/30 shadow-lg transition-all duration-300"
       >
-        <div className="w-5 h-5 flex flex-col justify-center items-center">
+        <div className="w-4 h-4 flex flex-col justify-center items-center">
           <motion.div
-            animate={isSidebarOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
-            className="w-5 h-0.5 bg-current mb-1 origin-center transition-colors"
+            animate={isSidebarOpen ? { rotate: 45, y: 3 } : { rotate: 0, y: 0 }}
+            className="w-4 h-0.5 bg-current mb-0.5 origin-center transition-colors"
           />
           <motion.div
             animate={isSidebarOpen ? { opacity: 0 } : { opacity: 1 }}
-            className="w-5 h-0.5 bg-current mb-1"
+            className="w-4 h-0.5 bg-current mb-0.5"
           />
           <motion.div
-            animate={isSidebarOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-            className="w-5 h-0.5 bg-current origin-center"
+            animate={isSidebarOpen ? { rotate: -45, y: -3 } : { rotate: 0, y: 0 }}
+            className="w-4 h-0.5 bg-current origin-center"
           />
         </div>
       </button>
@@ -208,21 +208,21 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
       {/* Mobile Hamburger Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed left-4 top-24 z-40 bg-black/60 backdrop-blur-md border border-white/20 rounded-lg p-3 text-white/80 hover:text-white hover:bg-black/70 hover:border-white/30 shadow-lg transition-all duration-200"
+        className="lg:hidden fixed left-4 top-20 z-40 bg-black/60 backdrop-blur-md border border-white/20 rounded-lg p-2 text-white/50 hover:text-white/70 hover:bg-black/70 hover:border-white/30 shadow-lg transition-all duration-200"
         aria-label="Toggle chapter menu"
       >
-        <div className="w-5 h-5 flex flex-col justify-center items-center">
+        <div className="w-4 h-4 flex flex-col justify-center items-center">
           <motion.div
-            animate={isMobileMenuOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
-            className="w-5 h-0.5 bg-current mb-1 origin-center transition-colors"
+            animate={isMobileMenuOpen ? { rotate: 45, y: 3 } : { rotate: 0, y: 0 }}
+            className="w-4 h-0.5 bg-current mb-0.5 origin-center transition-colors"
           />
           <motion.div
             animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-            className="w-5 h-0.5 bg-current mb-1"
+            className="w-4 h-0.5 bg-current mb-0.5"
           />
           <motion.div
-            animate={isMobileMenuOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-            className="w-5 h-0.5 bg-current origin-center"
+            animate={isMobileMenuOpen ? { rotate: -45, y: -3 } : { rotate: 0, y: 0 }}
+            className="w-4 h-0.5 bg-current origin-center"
           />
         </div>
       </button>

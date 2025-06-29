@@ -25,7 +25,7 @@ const CalculateButton: React.FC<CalculatorButtonProps> = ({
       variant={variant} 
       className={className} 
       onClick={onClick}
-      style={{ fontFamily: 'Aptos' }}
+      style={{ fontFamily: 'JetBrains Mono, monospace' }}
     >
       {children}
     </Button>

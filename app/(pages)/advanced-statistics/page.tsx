@@ -25,8 +25,6 @@ import {
   
 } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/app/components/ui/button'
-import { Input } from '@/app/components/ui/input'
 
 const AdvancedStatisticsPage = () => {
 // =========================================
@@ -89,23 +87,33 @@ const AdvancedStatisticsPage = () => {
             )
           case 'normal':
             return (
-              <NormalDistributionAnimation /> 
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Normal Distribution Animation - Coming Soon</p>
+              </div>
             )
           case 'poisson':
             return (
-              <PoissonDistributionAnimation />
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Poisson Distribution Animation - Coming Soon</p>
+              </div>
             )
           case 'gamma-beta':
             return (
-              <GammaBetaDistributionAnimation />
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Gamma/Beta Distribution Animation - Coming Soon</p>
+              </div>
             )
           case 'chi-squared': 
             return (
-              <ChiSquaredDistributionAnimation />
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Chi-Squared Distribution Animation - Coming Soon</p>
+              </div>
             )
           case 't-distribution':
             return (
-              <TDistributionAnimation />
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">t-Distribution Animation - Coming Soon</p>
+              </div>
             )
           default:
             return (
@@ -115,21 +123,21 @@ const AdvancedStatisticsPage = () => {
       case 'statistical-inference':
         return (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/60">Statistical Inference</p>
+            <p className="text-muted-foreground">Statistical Inference Animation - Coming Soon</p>
             {/* Replace with <AnovaAnimation /> */}
           </div>
         )
       case 'regression':
         return (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/60">Regression animations</p>
+            <p className="text-muted-foreground">Regression Animation - Coming Soon</p>
             {/* Replace with <RegressionAnimation /> */}
           </div>
         )
       default:
         return (
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white/40">Select a section to view animations</p>
+            <p className="text-muted-foreground/60">Select a section to view animations</p>
           </div>
         )
     }
@@ -137,14 +145,10 @@ const AdvancedStatisticsPage = () => {
   
 
 return (
-    <div className='flex flex-col h-screen'>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-6 md:px-4 py-4">
-          <NavigationBar />
-        </div>
-
-        {/* Horizontal Progress Bar for Tracking Page Progress */}
-        
+    <div className='h-screen bg-background text-foreground'>
+      {/* Navigation Bar - Matching Front Page Exactly */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background">
+        <NavigationBar />
       </header>
 
       {/* Chapter Navigation Menu  */}
@@ -154,36 +158,62 @@ return (
         onSectionClick={handleSectionNavigation}
       />
       <main 
-        className="pt-20 h-screen"
+        className="h-screen"
+        style={{ paddingTop: '80px' }} // Account for navigation bar height
       >
         <Splitter className="h-full">
           {/* Left Column */}
           <SplitterPanel size={50} minSize={30}> 
-                          <div ref={contentRef} className="h-full overflow-y-auto custom-scrollbar">
-                <div className="space-y-12 p-6 lg:p-12">
+            <div className="h-full flex flex-col">
+              <div 
+                ref={contentRef} 
+                className="flex-1 overflow-y-auto custom-scrollbar"
+                style={{ 
+                  scrollBehavior: 'smooth',
+                  height: 'calc(100vh - 80px)' // Ensure proper height calculation
+                }}
+              >
+                <div className="space-y-12 p-6 lg:p-12 academic-body" style={{ paddingTop: '100px' }}>
                   {/*Scrollable Content with ./Content Integrations*/}
-                <section>
-                  <Introduction />
-                </section>
-                <section>
-                  <AnovaDescription />
-                </section>
+                  <section>
+                    <Introduction />
+                  </section>
+                  <section>
+                    <AnovaDescription />
+                  </section>
+                  
+                  {/* Add some extra content to demonstrate scrolling when needed */}
+                  <section className="pb-8">
+                    <div className="text-center text-muted-foreground text-sm">
+                      {/* This ensures there's always scroll space when content grows */}
+                    </div>
+                  </section>
+                </div>
               </div>
             </div>
           </SplitterPanel>
 
           {/* Right Column */}
           <SplitterPanel size={50} minSize={30}>
-            <section>
-              <div className="h-full flex flex-col items-center justify-center p-8">
-                <div className="w-full h-full max-w-4xl max-h-[80vh] bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center">
-                  <div ref={animationContainerRef} className="w-full flex-grow relative">
-                    {renderAnimation()}
-                  </div>
-
-                </div>
-              </div>        
-            </section>
+            <div className="h-full flex flex-col">
+              <div 
+                className="flex-1 overflow-y-auto custom-scrollbar"
+                style={{ 
+                  scrollBehavior: 'smooth',
+                  height: 'calc(100vh - 80px)' // Ensure proper height calculation
+                }}
+              >
+                                 <div className="h-full flex flex-col items-center justify-start p-8" style={{ paddingTop: '100px' }}>
+                   <div className="w-full max-w-4xl bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center min-h-full">
+                     <div ref={animationContainerRef} className="w-full flex-grow relative">
+                       {renderAnimation()}
+                     </div>
+                   </div>
+                   {/* Extra space at bottom for comfortable scrolling */}
+                   <div style={{ height: '100px' }}></div>
+                 </div>
+              </div>
+            </div>        
           </SplitterPanel>
         </Splitter>
       </main>
