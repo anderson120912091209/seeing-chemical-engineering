@@ -36,8 +36,8 @@ const BinomialDistributionAnimation = () => {
     text: '#e5e5e5',
     textMuted: '#888888',
     accent: '#ffffff',
-    data: '#666666',
-    dataHighlight: '#999999'
+    data: '#8bb4d8',              // Baby light blue for dark mode
+    dataHighlight: '#a5c7e0'      // Slightly brighter baby blue for hover
   }
 
   const binomialPMF = (k: number, n: number, p: number): number => {

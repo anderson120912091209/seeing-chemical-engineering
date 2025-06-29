@@ -84,10 +84,11 @@ const distributionData = [
   }
 ];
 
-const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
+const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, activeDistribution }: {
   onBetweenClick?: () => void;
   onWithinClick?: () => void;
   onDistributionClick?: (distributionId: string, distributionName: string) => void;
+  activeDistribution?: string | null;
 } = {}) => {
   const [expandedItems, setExpandedItems] = useState(new Set());
 
@@ -101,11 +102,13 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
     setExpandedItems(newExpanded);
   };
 
-  const handleDistributionClick = (distribution: typeof distributionData[0]) => {
-    // Toggle expansion
+  const handleDistributionExpand = (distribution: typeof distributionData[0]) => {
+    // Only toggle expansion, don't trigger animation
     toggleExpanded(distribution.id);
-    
-    // Trigger animation on right side
+  };
+
+  const handleAnimationActivate = (distribution: typeof distributionData[0]) => {
+    // Only trigger animation on right side
     if (onDistributionClick) {
       onDistributionClick(distribution.id, distribution.name);
     }
@@ -139,11 +142,14 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
         <div className="space-y-1">
           {distributionData.map((distribution) => {
             const isExpanded = expandedItems.has(distribution.id);
+            const isActive = activeDistribution === distribution.id;
             
             return (
-              <div key={distribution.id} className="border border-white/10 rounded-lg overflow-hidden">
+              <div key={distribution.id} className={`border rounded-lg overflow-hidden transition-all duration-200 ${
+                isActive ? 'border-blue-400/30 bg-blue-500/5' : 'border-white/10'
+              }`}>
                 <button
-                  onClick={() => handleDistributionClick(distribution)}
+                  onClick={() => handleDistributionExpand(distribution)}
                   className="w-full flex items-center gap-2 p-2 text-left hover:bg-white/5 transition-colors duration-200"
                 >
                   <div className="flex-shrink-0">
@@ -153,18 +159,28 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
                       <ChevronRight className="w-3 h-3 text-white/60" />
                     )}
                   </div>
-                  <span className="text-sm text-white/70 hover:text-white/90 transition-colors duration-200">
-                    {distribution.name}
-                  </span>
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className={`text-sm transition-colors duration-200 ${
+                      isActive ? 'text-blue-200 font-medium' : 'text-white/70 hover:text-white/90'
+                    }`}>
+                      {distribution.name}
+                    </span>
+                    {isActive && (
+                      <div className="w-1.5 h-1.5 bg-green-400/80 rounded-full"></div>
+                    )}
+                  </div>
                 </button>
                 
                 {isExpanded && (
-                  <div className="px-3 pb-3 ml-5 space-y-2 animate-in slide-in-from-top duration-200">
+                  <div 
+                    className="px-3 pb-3 ml-5 space-y-3 animate-in slide-in-from-top duration-200 cursor-pointer"
+                    onClick={() => handleDistributionExpand(distribution)}
+                  >
                     <p className="text-white/60 text-xs leading-relaxed">
                       {distribution.explanation}
                     </p>
                     
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <h4 className="text-white/70 text-xs font-medium">Key Points:</h4>
                       <ul className="space-y-0.5">
                         {distribution.keyPoints.map((point, index) => (
@@ -174,6 +190,26 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick }: {
                           </li>
                         ))}
                       </ul>
+                    </div>
+
+                    {/* Activate Animation Button */}
+                    <div className="pt-2 border-t border-white/10">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAnimationActivate(distribution);
+                        }}
+                        className="w-full text-left px-3 py-2 border border-white/15 hover:border-white/25 hover:bg-white/5 transition-all duration-200 rounded"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-white/70 hover:text-white/90 technical-mono">
+                            {isActive ? '● ACTIVE' : '▶ VIEW ANIMATION'}
+                          </span>
+                          <span className="text-xs text-white/40">
+                            →
+                          </span>
+                        </div>
+                      </button>
                     </div>
                   </div>
                 )}

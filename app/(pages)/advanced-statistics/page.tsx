@@ -43,8 +43,8 @@ const AdvancedStatisticsPage = () => {
       id: "introduction", 
       number: "1",
       subchapters: [
-        { title: "Binomial Distribution", id: "normal", number: "1.1" },
-        { title: "Normal Distribution", id: "binomial", number: "1.2" },
+        { title: "Normal Distribution", id: "normal", number: "1.1" },
+        { title: "Binomial Distribution", id: "binomial", number: "1.2" },
         { title: "Poisson/Exponential Distribution", id: "poisson", number: "1.3" },
         { title: "Gamma/Beta Distribution", id: "gamma-beta", number: "1.4" },
         { title: "Chi-Squared Distribution", id: "chi-squared", number: "1.5" },
@@ -75,21 +75,27 @@ const AdvancedStatisticsPage = () => {
     setActiveSubchapter(subchapter || null)
   }
 
+  // Distribution animation activation handler
+  const handleDistributionClick = (distributionId: string, distributionName: string) => {
+    setActiveSection('introduction')
+    setActiveSubchapter(distributionId)
+  }
+
   /* Animation Rendering Function 
   1. Renders Different Animations depending on activeSection */
   const renderAnimation = () => {
     switch(activeSection) {
       case 'introduction':
         switch(activeSubchapter) {
-          case 'binomial':
-            return (
-              <BinomialBasketballAnimation />
-            )
           case 'normal':
             return (
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-muted-foreground">Normal Distribution Animation - Coming Soon</p>
               </div>
+            )
+          case 'binomial':
+            return (
+              <BinomialBasketballAnimation />
             )
           case 'poisson':
             return (
@@ -117,7 +123,9 @@ const AdvancedStatisticsPage = () => {
             )
           default:
             return (
-              <BinomialBasketballAnimation />
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground/60">Select a distribution to view animations</p>
+              </div>
             )
         }
       case 'statistical-inference':
@@ -176,7 +184,10 @@ return (
                 <div className="space-y-12 p-6 lg:p-12 academic-body" style={{ paddingTop: '100px' }}>
                   {/*Scrollable Content with ./Content Integrations*/}
                   <section>
-                    <Introduction />
+                    <Introduction 
+                      onDistributionClick={handleDistributionClick}
+                      activeDistribution={activeSection === 'introduction' ? activeSubchapter : null}
+                    />
                   </section>
                   <section>
                     <AnovaDescription />
