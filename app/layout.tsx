@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Seeing Science - Chemical Engineering Edition",
-  description: "Making complex chemical engineering concepts accessible through visualization",
+  title: "Seeing Science",
+  description: "Making complex engineering concepts accessible through visualization",
+  icons: {
+    icon: '/purelogoblue.ico?v=1',
+    shortcut: '/purelogoblue.ico?v=1',  
+    apple: '/purelogoblue.ico?v=1', 
+  },
 };
 
 export default function RootLayout({
