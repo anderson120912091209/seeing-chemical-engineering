@@ -14,10 +14,12 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/CHAPTER-1/binomial-distribution'
+import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2 /part-1'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/chapter-1-intro-content'  
-import AnovaDescription from '@/app/components/content/anova-description'   
+import Chapter2 from '@/app/components/content/chapter-2-content'
+  
 
 //Import Utils Functions 
 import { 
@@ -119,9 +121,7 @@ const AdvancedStatisticsPage = () => {
             )
           case 'poisson':
             return (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Poisson Distribution Animation - Coming Soon</p>
-              </div>
+              <CerealMachineAnimation />
             )
           case 'gamma-beta':
             return (
@@ -149,12 +149,30 @@ const AdvancedStatisticsPage = () => {
             )
         }
       case 'statistical-inference':
-        return (
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-muted-foreground">Statistical Inference Animation - Coming Soon</p>
-            {/* Replace with <AnovaAnimation /> */}
-          </div>
-        )
+        switch(activeSubchapter) {
+          case 'chap-2-sub-1':
+            return (
+              <CerealMachineAnimation />
+            )
+          case 'chap-2-sub-2':
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Population Mean Inference - Coming Soon</p>
+              </div>
+            )
+          case 'chap-2-sub-3':
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Population Variance Inference - Coming Soon</p>
+              </div>
+            )
+          default:
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground/60">Select a statistical inference topic to view animations</p>
+              </div>
+            )
+        }
       case 'regression':
         return (
           <div className="w-full h-full flex items-center justify-center">
@@ -225,7 +243,7 @@ return (
                     />
                   </section>
                   <section>
-                    <AnovaDescription />
+                    <Chapter2 />  
                   </section>
                   
                   {/* Add some extra content to demonstrate scrolling when needed */}

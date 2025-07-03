@@ -100,16 +100,22 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
     textSecondary: theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
     textMuted: theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
     textMuted2: theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
-    textActive: theme === 'dark' ? 'text-sky-300' : 'text-sky-400',
+    textActive: theme === 'dark' ? 'text-sky-300' : 'text-[#9EC6F3]',
     
-    // Simple, clean card styling
-    cardBg: theme === 'dark' ? 'bg-gray-800/40' : 'bg-gray-50',
-    cardBorder: theme === 'dark' ? 'border-gray-700' : 'border-gray-200',
-    cardHover: theme === 'dark' ? 'hover:bg-gray-800/60' : 'hover:bg-gray-100',
+    // Subtle 3D card styling with gentle depth
+    cardBg: theme === 'dark' 
+      ? 'bg-gradient-to-br from-gray-800 to-gray-850 shadow-sm shadow-black/10' 
+      : 'bg-gradient-to-br from-white to-gray-25 shadow-sm shadow-gray-300/30',
+    cardBorder: theme === 'dark' ? 'border-gray-600/40' : 'border-gray-200/60',
+    cardHover: theme === 'dark' 
+      ? 'hover:shadow-md hover:shadow-black/15 hover:-translate-y-px' 
+      : 'hover:shadow-md hover:shadow-gray-400/30 hover:-translate-y-px',
     
-    // Simple active state with baby blue
-    cardActiveBg: theme === 'dark' ? 'bg-gray-800/60' : 'bg-sky-50/80',
-    cardActiveBorder: theme === 'dark' ? 'border-gray-600' : 'border-sky-200',
+    // Active state - same as default cards, no special background
+    cardActiveBg: theme === 'dark' 
+      ? 'bg-gradient-to-br from-gray-800 to-gray-850 shadow-sm shadow-black/10' 
+      : 'bg-gradient-to-br from-white to-gray-25 shadow-sm shadow-gray-300/30',
+    cardActiveBorder: theme === 'dark' ? 'border-gray-600/40' : 'border-gray-200/60',
     
     // Other elements
     iconColor: theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
@@ -139,7 +145,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
 
   return (
     <div>
-      <h2 className={`text-3xl font-bold mb-6 ${colors.text}`}>01. Introduction & Basics</h2>
+      <h2 className={`text-2xl font-bold mb-6 ${colors.text}`}>01. Introduction & Basics</h2>
       <div className={`space-y-4 text-md font-light ${colors.textSecondary}`}>
         <p>
           <span className="font-medium"> Welcome to the Statistics Page of Seeing Science!</span>
@@ -147,10 +153,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
           This page is designed for the engineers & students who already have a basic
           understanding of statistics and want to further explore advanced statistics with visualizations.
           This course assumes familiarity with basic statistical concepts and calculus. For some refresher on basic statistics, Brown University's{" "}
-          <ClickableUnderline color="blue" onClick={() => onBetweenClick?.()}>
-            Seeing Theory
-          </ClickableUnderline>{" "}
-          is a really good source of reference. 
+          Seeing Theory is a really good source of reference. 
           <br/>
           Let's get started with some distributions 
         </p>
@@ -158,7 +161,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
           (Click on the expandable bullet points for explanations and animations)
         </p>
         
-        <h3 className={`text-xl font-semibold mb-2 ${colors.text}`}>
+        <h3 className={`text-lg font-semibold mb-2 ${colors.text}`}>
           Distributions
         </h3>
         
@@ -171,7 +174,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
                 key={distribution.id} 
                 onClick={() => onDistributionClick?.(distribution.id, distribution.name)}
                 className={`
-                  group cursor-pointer border rounded-lg transition-colors duration-200
+                  group cursor-pointer border rounded-lg transition-all duration-200 ease-out transform
                   p-3 sm:p-2 md:p-3 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]
                   ${isActive 
                     ? `${colors.cardActiveBorder} ${colors.cardActiveBg}` 
@@ -192,7 +195,7 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
                       {distribution.name}
                     </h3>
                     {isActive && (
-                      <div className="w-2 h-2 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full flex-shrink-0 mt-0.5"></div>
+                      <div className="w-2 h-2 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full flex-shrink-0 mt-1"></div>
                     )}
                   </div>
 
