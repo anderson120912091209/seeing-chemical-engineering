@@ -14,7 +14,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/CHAPTER-1/binomial-distribution'
-import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2 /part-1'
+import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2 /defaultanimation'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/chapter-1-intro-content'  
@@ -38,6 +38,11 @@ const AdvancedStatisticsPage = () => {
   const contentRef = useRef<HTMLDivElement>(null)
   const animationContainerRef = useRef<HTMLDivElement>(null)
   const [scrollProgress, setScrollProgress] = useState(0)
+  
+  // Refs for section detection
+  const introductionRef = useRef<HTMLElement>(null)
+  const chapter2Ref = useRef<HTMLElement>(null)
+  const regressionRef = useRef<HTMLElement>(null)
 
   // Chapter configuration
   const chapters = [
@@ -84,22 +89,112 @@ const AdvancedStatisticsPage = () => {
     setActiveSubchapter(distributionId)
   }
 
-  // Scroll progress handler
+  // Enhanced scroll handler with section detection
   const handleScroll = () => {
-    if (contentRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = contentRef.current
-      const maxScroll = scrollHeight - clientHeight
-      const progress = maxScroll > 0 ? (scrollTop / maxScroll) * 100 : 0
-      setScrollProgress(Math.min(progress, 100))
+    if (!contentRef.current) return
+
+    const { scrollTop, scrollHeight, clientHeight } = contentRef.current
+    const maxScroll = scrollHeight - clientHeight
+    const progress = maxScroll > 0 ? (scrollTop / maxScroll) * 100 : 0
+    setScrollProgress(Math.min(progress, 100))
+
+    // Calculate which section is currently in view
+    const sections = [
+      { ref: introductionRef, id: 'introduction' },
+      { ref: chapter2Ref, id: 'statistical-inference' },
+      { ref: regressionRef, id: 'regression' }
+    ]
+
+    let currentSection = 'introduction' // default
+
+    sections.forEach((section) => {
+      if (section.ref.current) {
+        const element = section.ref.current
+        const rect = element.getBoundingClientRect()
+        const containerRect = contentRef.current!.getBoundingClientRect()
+        
+        // Calculate relative position within the scroll container
+        const elementTop = rect.top - containerRect.top
+        const elementBottom = rect.bottom - containerRect.top
+        
+        // Check if section is in the middle portion of the viewport
+        const viewportMiddle = containerRect.height / 2
+        
+        if (elementTop <= viewportMiddle && elementBottom >= viewportMiddle) {
+          currentSection = section.id
+        }
+      }
+    })
+
+    // Only update if section actually changed
+    if (currentSection !== activeSection) {
+      console.log('Scroll detected section change:', currentSection)
+      setActiveSection(currentSection)
+      setActiveSubchapter(null) // Reset subchapter when auto-switching
     }
   }
 
-  // Set up scroll listener
+  // Intersection Observer as backup (simplified)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            const sectionId = entry.target.getAttribute('data-section')
+            if (sectionId) {
+              console.log('Intersection Observer backup:', sectionId)
+            }
+          }
+        })
+      },
+      {
+        root: contentRef.current,
+        threshold: [0.1, 0.3, 0.5],
+        rootMargin: '-10% 0px -10% 0px'
+      }
+    )
+
+    // Observe sections with a delay to ensure refs are ready
+    setTimeout(() => {
+      const sections = [introductionRef.current, chapter2Ref.current, regressionRef.current]
+      sections.forEach((section) => {
+        if (section) {
+          observer.observe(section)
+        }
+      })
+    }, 100)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // Set up scroll listener with throttling
   useEffect(() => {
     const contentElement = contentRef.current
-    if (contentElement) {
-      contentElement.addEventListener('scroll', handleScroll)
-      return () => contentElement.removeEventListener('scroll', handleScroll)
+    if (!contentElement) return
+
+    // Throttle scroll events for better performance
+    let ticking = false
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    contentElement.addEventListener('scroll', throttledScroll, { passive: true })
+    
+    // Initial call to set correct section
+    setTimeout(() => {
+      handleScroll()
+    }, 200)
+
+    return () => {
+      contentElement.removeEventListener('scroll', throttledScroll)
     }
   }, [])
 
@@ -143,36 +238,13 @@ const AdvancedStatisticsPage = () => {
             )
           default:
             return (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground/60">Select a distribution to view animations</p>
-              </div>
+              <BinomialBasketballAnimation />
             )
         }
       case 'statistical-inference':
-        switch(activeSubchapter) {
-          case 'chap-2-sub-1':
-            return (
-              <CerealMachineAnimation />
-            )
-          case 'chap-2-sub-2':
-            return (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Population Mean Inference - Coming Soon</p>
-              </div>
-            )
-          case 'chap-2-sub-3':
-            return (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground">Population Variance Inference - Coming Soon</p>
-              </div>
-            )
-          default:
-            return (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-muted-foreground/60">Select a statistical inference topic to view animations</p>
-              </div>
-            )
-        }
+        return ( 
+          <CerealMachineAnimation/>
+        )
       case 'regression':
         return (
           <div className="w-full h-full flex items-center justify-center">
@@ -236,14 +308,46 @@ return (
               >
                 <div className="space-y-12 p-6 lg:p-12 academic-body">
                   {/*Scrollable Content with ./Content Integrations*/}
-                  <section>
+                  <section 
+                    ref={introductionRef}
+                    data-section="introduction"
+                    className="min-h-screen"
+                  >
                     <Introduction 
                       onDistributionClick={handleDistributionClick}
                       activeDistribution={activeSection === 'introduction' ? activeSubchapter : null}
                     />
                   </section>
-                  <section>
+                  <section 
+                    ref={chapter2Ref}
+                    data-section="statistical-inference"
+                    className="min-h-screen"
+                  >
                     <Chapter2 />  
+                  </section>
+                  
+                  <section 
+                    ref={regressionRef}
+                    data-section="regression"
+                    className="min-h-screen"
+                  >
+                    <div className="space-y-6">
+                      <h2 className="text-2xl font-bold">03. Regression Analysis</h2>
+                      <p className="text-muted-foreground">
+                        Explore linear and non-linear regression techniques, model validation, 
+                        and advanced regression methods.
+                      </p>
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Topics Covered:</h3>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                          <li>• Simple and Multiple Linear Regression</li>
+                          <li>• Model Assumptions and Diagnostics</li>
+                          <li>• Polynomial and Non-linear Regression</li>
+                          <li>• Regularization Techniques (Ridge, Lasso)</li>
+                          <li>• Cross-validation and Model Selection</li>
+                        </ul>
+                      </div>
+                    </div>
                   </section>
                   
                   {/* Add some extra content to demonstrate scrolling when needed */}
@@ -267,15 +371,46 @@ return (
                   height: 'calc(100vh - 80px)' // Ensure proper height calculation
                 }}
               >
-                                 <div className="h-full flex flex-col items-center justify-start p-8">
-                   <div className="w-full max-w-4xl bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center min-h-full">
-                     <div ref={animationContainerRef} className="w-full flex-grow relative">
-                       {renderAnimation()}
-                     </div>
-                   </div>
-                   {/* Extra space at bottom for comfortable scrolling */}
-                   <div style={{ height: '100px' }}></div>
-                 </div>
+                <div className="h-full flex flex-col items-center justify-start p-8">
+                  {/* Animation Section Indicator */}
+                  <div className="w-full max-w-4xl mb-4">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-muted-foreground">
+                        {activeSection === 'introduction' && 'Chapter 1: Distribution Animations'}
+                        {activeSection === 'statistical-inference' && 'Chapter 2: Hypothesis Testing'}
+                        {activeSection === 'regression' && 'Chapter 3: Regression Analysis'}
+                      </h3>
+                      {activeSubchapter && (
+                        <p className="text-sm text-muted-foreground/70 mt-1">
+                          {activeSubchapter}.
+                        </p>
+                      )}
+                      {/* Debug indicator */}
+                      <div className="mt-2 text-xs text-muted-foreground/50">
+                        Active Section: {activeSection} | Progress: {scrollProgress.toFixed(0)}%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="w-full max-w-4xl bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center min-h-full">
+                    <div ref={animationContainerRef} className="w-full flex-grow relative">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={`${activeSection}-${activeSubchapter}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="w-full h-full"
+                        >
+                          {renderAnimation()}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                  {/* Extra space at bottom for comfortable scrolling */}
+                  <div style={{ height: '100px' }}></div>
+                </div>
               </div>
             </div>        
           </SplitterPanel>

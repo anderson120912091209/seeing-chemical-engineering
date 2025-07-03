@@ -588,14 +588,6 @@ const BinomialDistributionAnimation = () => {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: colors.background, fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Fixed Header */}
-      <div className="text-center px-6 py-4 flex-shrink-0">
-        <h3 className="text-lg font-medium mb-2 academic-heading" style={{ color: colors.text }}>
-          Binomial Trials 
-        </h3>
-        <p className="text-sm" style={{ color: colors.textMuted, fontFamily: 'Inter, system-ui, sans-serif', fontWeight: '400' }}>
-          Repeated experiments visualization
-        </p>
-      </div>
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
