@@ -35,6 +35,7 @@ const AdvancedStatisticsPage = () => {
   const [activeSubchapter, setActiveSubchapter] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const animationContainerRef = useRef<HTMLDivElement>(null)
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   // Chapter configuration
   const chapters = [
@@ -80,6 +81,25 @@ const AdvancedStatisticsPage = () => {
     setActiveSection('introduction')
     setActiveSubchapter(distributionId)
   }
+
+  // Scroll progress handler
+  const handleScroll = () => {
+    if (contentRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = contentRef.current
+      const maxScroll = scrollHeight - clientHeight
+      const progress = maxScroll > 0 ? (scrollTop / maxScroll) * 100 : 0
+      setScrollProgress(Math.min(progress, 100))
+    }
+  }
+
+  // Set up scroll listener
+  useEffect(() => {
+    const contentElement = contentRef.current
+    if (contentElement) {
+      contentElement.addEventListener('scroll', handleScroll)
+      return () => contentElement.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   /* Animation Rendering Function 
   1. Renders Different Animations depending on activeSection */
@@ -157,7 +177,22 @@ return (
       {/* Navigation Bar - Matching Front Page Exactly */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background">
         <NavigationBar />
+        
+        {/* Horizontal Scroll Progress Bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted/10">
+          <motion.div
+            className="h-full bg-blue-300"
+            animate={{ width: `${scrollProgress}%` }}
+            transition={{ 
+              type: "tween", 
+              ease: "easeOut",
+              duration: 0.2 
+            }}
+          />
+        </div>
       </header>
+
+      
 
       {/* Chapter Navigation Menu  */}
       <ChapterNavigation
@@ -172,7 +207,7 @@ return (
         <Splitter className="h-full">
           {/* Left Column */}
           <SplitterPanel size={50} minSize={30}> 
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col bg-[your-background-color]">
               <div 
                 ref={contentRef} 
                 className="flex-1 overflow-y-auto custom-scrollbar"
@@ -181,7 +216,7 @@ return (
                   height: 'calc(100vh - 80px)' // Ensure proper height calculation
                 }}
               >
-                <div className="space-y-12 p-6 lg:p-12 academic-body" style={{ paddingTop: '100px' }}>
+                <div className="space-y-12 p-6 lg:p-12 academic-body">
                   {/*Scrollable Content with ./Content Integrations*/}
                   <section>
                     <Introduction 
@@ -206,7 +241,7 @@ return (
 
           {/* Right Column */}
           <SplitterPanel size={50} minSize={30}>
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col bg-[your-background-color]">
               <div 
                 className="flex-1 overflow-y-auto custom-scrollbar"
                 style={{ 
@@ -214,7 +249,7 @@ return (
                   height: 'calc(100vh - 80px)' // Ensure proper height calculation
                 }}
               >
-                                 <div className="h-full flex flex-col items-center justify-start p-8" style={{ paddingTop: '100px' }}>
+                                 <div className="h-full flex flex-col items-center justify-start p-8">
                    <div className="w-full max-w-4xl bg-background-accent/40 rounded-2xl p-4 flex flex-col items-center justify-center min-h-full">
                      <div ref={animationContainerRef} className="w-full flex-grow relative">
                        {renderAnimation()}

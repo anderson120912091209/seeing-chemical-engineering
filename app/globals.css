@@ -188,123 +188,25 @@
   }
 }
 
-/* Custom Scrollbar Styling */
-/* Dark mode scrollbars */
-.dark ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Custom Scrollbar Styling - Hidden Scrollbars */
+/* Hide scrollbars but keep functionality for all elements */
+* {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+*::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
 }
 
-.dark ::-webkit-scrollbar-thumb {
-    background: rgba(200, 200, 200, 0.6);
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
+/* Ensure custom scrollbar containers also hide scrollbars */
+.custom-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(200, 200, 200, 0.8);
-}
-
-.dark ::-webkit-scrollbar-thumb:active {
-    background: rgba(180, 180, 180, 0.7);
-}
-
-.dark ::-webkit-scrollbar-corner {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-/* Light mode scrollbars */
-.light ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.light ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-}
-
-.light ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.light ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
-}
-
-.light ::-webkit-scrollbar-thumb:active {
-  background: rgba(0, 0, 0, 0.35);
-}
-
-.light ::-webkit-scrollbar-corner {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-/* Firefox scrollbars */
-.dark * {
-  scrollbar-width: thin;
-    scrollbar-color: rgba(200, 200, 200, 0.6) rgba(255, 255, 255, 0.05);
-}
-
-.light * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.05);
-}
-
-/* Custom blue accent scrollbar for special containers */
-.dark .custom-scrollbar {
-  scrollbar-width: thin;
-    scrollbar-color: rgba(200, 200, 200, 0.6) rgba(255, 255, 255, 0.05);
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(200, 200, 200, 0.6);
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(200, 200, 200, 0.8);
-}
-
-.light .custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(0, 0, 0, 0.05);
-}
-
-.light .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.light .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.light .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(129, 168, 231, 0.6);
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
-}
-
-.light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(129, 168, 231, 0.8);
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Hide scrollbar but keep functionality */
@@ -332,7 +234,7 @@ html {
   }
 }
 
-/* Splitter separator styling for better visibility on macOS */
+/* Splitter separator styling - Simple & Clean */
 .p-splitter {
   background: transparent;
 }
@@ -341,59 +243,86 @@ html {
   position: relative;
 }
 
-/* Vertical splitter (left-right split) */
+/* Left panel - slightly darker background */
+.p-splitter-panel:first-child {
+  position: relative;
+}
+
+.dark .p-splitter-panel:first-child {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.light .p-splitter-panel:first-child {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Right panel - default background */
+.p-splitter-panel:last-child {
+  position: relative;
+}
+
+.dark .p-splitter-panel:last-child {
+  background: transparent;
+}
+
+.light .p-splitter-panel:last-child {
+  background: transparent;
+}
+
+/* Simple vertical splitter */
 .p-splitter .p-splitter-gutter {
   background: transparent;
   border: none;
   width: 8px !important;
   position: relative;
   transition: all 0.2s ease;
+  cursor: col-resize;
 }
 
 .p-splitter .p-splitter-gutter:hover {
   background: rgba(128, 128, 128, 0.1);
 }
 
-/* The actual visible separator line */
+/* Simple separator line - More Obvious */
 .p-splitter .p-splitter-gutter::before {
   content: '';
   position: absolute;
   left: 50%;
   top: 0;
   bottom: 0;
-  width: 1px;
+  width: 2px;
   transform: translateX(-50%);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-/* Theme-aware separator colors */
+/* Theme-aware separator colors - More Obvious */
 .dark .p-splitter .p-splitter-gutter::before {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.05);
-}
-
-.light .p-splitter .p-splitter-gutter::before {
-  background: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.05);
-}
-
-/* Hover effect for separator */
-.dark .p-splitter .p-splitter-gutter:hover::before {
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1);
 }
 
-.light .p-splitter .p-splitter-gutter:hover::before {
-  background: rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1);
+.light .p-splitter .p-splitter-gutter::before {
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08);
 }
 
-/* Handle/grip styling for dragging */
+/* Simple hover effect - More Obvious */
+.dark .p-splitter .p-splitter-gutter:hover::before {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.light .p-splitter .p-splitter-gutter:hover::before {
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+/* Simple drag handle */
 .p-splitter .p-splitter-gutter-handle {
   background: transparent;
-  border-radius: 6px;
-  width: 6px;
-  height: 40px;
+  border-radius: 4px;
+  width: 4px;
+  height: 30px;
   transition: all 0.2s ease;
   opacity: 0;
 }
@@ -403,10 +332,10 @@ html {
 }
 
 .dark .p-splitter .p-splitter-gutter:hover .p-splitter-gutter-handle {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .light .p-splitter .p-splitter-gutter:hover .p-splitter-gutter-handle {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.1);
 }
   
