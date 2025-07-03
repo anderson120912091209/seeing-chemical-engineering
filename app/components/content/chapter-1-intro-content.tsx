@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { useTheme } from '@/app/contexts/theme-context';
 
 // Mock ClickableUnderline component
 const ClickableUnderline = ({ children, color, onClick }: {
@@ -18,7 +19,7 @@ const ClickableUnderline = ({ children, color, onClick }: {
 const distributionData = [
   {
     id: 'normal',
-    name: 'Normal/Gaussian Distribution',
+    name: 'Normal Distribution',
     explanation: 'The normal distribution is a continuous probability distribution characterized by its bell-shaped curve. It\'s symmetric around the mean and is fundamental in statistics due to the Central Limit Theorem.',
     keyPoints: [
       'Bell-shaped curve symmetric around the mean',
@@ -40,7 +41,7 @@ const distributionData = [
   },
   {
     id: 'poisson',
-    name: 'Poisson/Exponential Distribution',
+    name: 'Poisson Distribution',
     explanation: 'Poisson models rare events occurring at a constant rate, while exponential models time between events. Both are crucial for queueing theory and reliability analysis.',
     keyPoints: [
       'Poisson: discrete, models count of rare events',
@@ -73,7 +74,7 @@ const distributionData = [
   },
   {
     id: 't-distribution',
-    name: 'Student\'s t-Distribution',
+    name: 't-Distribution',
     explanation: 'Similar to normal distribution but with heavier tails. Used when sample size is small or population standard deviation is unknown. Approaches normal as degrees of freedom increase.',
     keyPoints: [
       'Symmetric, bell-shaped like normal',
@@ -90,7 +91,29 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
   onDistributionClick?: (distributionId: string, distributionName: string) => void;
   activeDistribution?: string | null;
 } = {}) => {
+  const { theme } = useTheme();
   const [expandedItems, setExpandedItems] = useState(new Set());
+
+  // Clean, minimal theme colors for educational design
+  const colors = {
+    text: theme === 'dark' ? 'text-white/90' : 'text-gray-900',
+    textSecondary: theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
+    textMuted: theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
+    textMuted2: theme === 'dark' ? 'text-gray-500' : 'text-gray-500',
+    textActive: theme === 'dark' ? 'text-sky-300' : 'text-sky-400',
+    
+    // Simple, clean card styling
+    cardBg: theme === 'dark' ? 'bg-gray-800/40' : 'bg-gray-50',
+    cardBorder: theme === 'dark' ? 'border-gray-700' : 'border-gray-200',
+    cardHover: theme === 'dark' ? 'hover:bg-gray-800/60' : 'hover:bg-gray-100',
+    
+    // Simple active state with baby blue
+    cardActiveBg: theme === 'dark' ? 'bg-gray-800/60' : 'bg-sky-50/80',
+    cardActiveBorder: theme === 'dark' ? 'border-gray-600' : 'border-sky-200',
+    
+    // Other elements
+    iconColor: theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+  };
 
   const toggleExpanded = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -116,8 +139,8 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
 
   return (
     <div>
-      <h2 className="text-3xl font-bold text-white/90 mb-6">01. Introduction & Basics</h2>
-      <div className="space-y-4 text-md text-gray-300 font-light">
+      <h2 className={`text-3xl font-bold mb-6 ${colors.text}`}>01. Introduction & Basics</h2>
+      <div className={`space-y-4 text-md font-light ${colors.textSecondary}`}>
         <p>
           <span className="font-medium"> Welcome to the Statistics Page of Seeing Science!</span>
           <br/>
@@ -131,88 +154,60 @@ const Introduction = ({ onBetweenClick, onWithinClick, onDistributionClick, acti
           <br/>
           Let's get started with some distributions 
         </p>
-        <p className="text-white/60">
+        <p className={colors.textMuted}>
           (Click on the expandable bullet points for explanations and animations)
         </p>
         
-        <h3 className="text-xl font-semibold text-white/80 mb-2">
+        <h3 className={`text-xl font-semibold mb-2 ${colors.text}`}>
           Distributions
         </h3>
         
-        <div className="space-y-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
           {distributionData.map((distribution) => {
-            const isExpanded = expandedItems.has(distribution.id);
             const isActive = activeDistribution === distribution.id;
             
             return (
-              <div key={distribution.id} className={`border rounded-lg overflow-hidden transition-all duration-200 ${
-                isActive ? 'border-blue-400/30 bg-blue-500/5' : 'border-white/10'
-              }`}>
-                <button
-                  onClick={() => handleDistributionExpand(distribution)}
-                  className="w-full flex items-center gap-2 p-2 text-left hover:bg-white/5 transition-colors duration-200"
-                >
-                  <div className="flex-shrink-0">
-                    {isExpanded ? (
-                      <ChevronDown className="w-3 h-3 text-white/60" />
-                    ) : (
-                      <ChevronRight className="w-3 h-3 text-white/60" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className={`text-sm transition-colors duration-200 ${
-                      isActive ? 'text-blue-200 font-medium' : 'text-white/70 hover:text-white/90'
-                    }`}>
+              <div 
+                key={distribution.id} 
+                onClick={() => onDistributionClick?.(distribution.id, distribution.name)}
+                className={`
+                  group cursor-pointer border rounded-lg transition-colors duration-200
+                  p-3 sm:p-2 md:p-3 min-h-[60px] sm:min-h-[80px] md:min-h-[100px]
+                  ${isActive 
+                    ? `${colors.cardActiveBorder} ${colors.cardActiveBg}` 
+                    : `${colors.cardBorder} ${colors.cardBg}`
+                  }
+                  ${colors.cardHover}
+                `}
+              >
+                <div className="flex sm:flex-col justify-between h-full space-x-3 sm:space-x-0 space-y-0 sm:space-y-2 md:space-y-3 overflow-hidden">
+                  {/* Title and status */}
+                  <div className="flex items-start justify-between gap-2 flex-1 sm:flex-initial min-w-0">
+                    <h3 
+                      className={`text-sm sm:text-xs md:text-sm font-semibold leading-tight transition-colors duration-200 line-clamp-2 truncate ${
+                        isActive ? colors.textActive : colors.textSecondary
+                      }`}
+                      title={distribution.name}
+                    >
                       {distribution.name}
-                    </span>
+                    </h3>
                     {isActive && (
-                      <div className="w-1.5 h-1.5 bg-green-400/80 rounded-full"></div>
+                      <div className="w-2 h-2 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full flex-shrink-0 mt-0.5"></div>
                     )}
                   </div>
-                </button>
-                
-                {isExpanded && (
-                  <div 
-                    className="px-3 pb-3 ml-5 space-y-3 animate-in slide-in-from-top duration-200 cursor-pointer"
-                    onClick={() => handleDistributionExpand(distribution)}
-                  >
-                    <p className="text-white/60 text-xs leading-relaxed">
-                      {distribution.explanation}
-                    </p>
-                    
-                    <div className="space-y-2">
-                      <h4 className="text-white/70 text-xs font-medium">Key Points:</h4>
-                      <ul className="space-y-0.5">
-                        {distribution.keyPoints.map((point, index) => (
-                          <li key={index} className="text-white/50 text-xs flex items-start gap-1.5">
-                            <span className="text-white/30 mt-0.5">•</span>
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
 
-                    {/* Activate Animation Button */}
-                    <div className="pt-2 border-t border-white/10">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAnimationActivate(distribution);
-                        }}
-                        className="w-full text-left px-3 py-2 border border-white/15 hover:border-white/25 hover:bg-white/5 transition-all duration-200 rounded"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-white/70 hover:text-white/90 technical-mono">
-                            {isActive ? '● ACTIVE' : '▶ VIEW ANIMATION'}
-                          </span>
-                          <span className="text-xs text-white/40">
-                            →
-                          </span>
-                        </div>
-                      </button>
+                  {/* Simple action indicator - contained within card */}
+                  <div className="flex items-center justify-between sm:mt-auto flex-shrink-0 min-w-0 relative z-0">
+                    <span className={`text-xs truncate pr-2 ${colors.textMuted2}`}>
+                      {isActive ? 'Active' : 'Click to view'}
+                    </span>
+                    <div className={`transition-transform duration-200 group-hover:translate-x-1 flex-shrink-0 relative z-0 ${
+                      isActive ? colors.textActive : colors.iconColor
+                    }`}>
+                      →
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import { Play, RotateCcw, Settings, ArrowRight, ArrowLeft } from 'lucide-react'
 import LatexRenderer from '@/app/components/ui/latex-renderer'
+import { useTheme } from '@/app/contexts/theme-context'
 
 interface ExperimentResult {
   experimentNumber: number
@@ -12,6 +13,7 @@ interface ExperimentResult {
 
 const BinomialDistributionAnimation = () => {
   const svgRef = useRef<SVGSVGElement>(null)
+  const { theme } = useTheme();
   const [n, setN] = useState(20) // shots per experiment
   const [p, setP] = useState(0.7) // probability of success per shot
   const [numExperiments, setNumExperiments] = useState(100) // number of experiments to run
@@ -28,16 +30,25 @@ const BinomialDistributionAnimation = () => {
   const chartWidth = width - margin.left - margin.right
   const chartHeight = height - margin.top - margin.bottom
 
-  // Minimal dark theme palette using exact theme colors
-  const colors = {
-    background: 'oklch(0.19 0 0)',  // Exact same as theme background
-    surface: 'oklch(0.23 0 0)',     // Exact same as theme card color
+  // Theme-aware color palette
+  const colors = theme === 'dark' ? {
+    background: 'oklch(0.19 0 0)',
+    surface: 'oklch(0.23 0 0)',
     border: '#2a2a2a',
     text: '#e5e5e5',
     textMuted: '#888888',
-    accent: '#ffffff',
-    data: '#8bb4d8',              // Baby light blue for dark mode
-    dataHighlight: '#a5c7e0'      // Slightly brighter baby blue for hover
+    accent: '#fff',
+    data: '#8bb4d8', // Baby light blue for dark mode
+    dataHighlight: '#a5c7e0'
+  } : {
+    background: '#fff',
+    surface: '#f6f8fa',
+    border: '#e5e7eb',
+    text: '#222',
+    textMuted: '#888',
+    accent: '#111',
+    data: '#60a5fa', // Lighter blue for light mode
+    dataHighlight: '#3c649f'
   }
 
   const binomialPMF = (k: number, n: number, p: number): number => {
@@ -164,7 +175,7 @@ const BinomialDistributionAnimation = () => {
       .style("letter-spacing", "0.05em")
       .text(`n=${n} • p=${p} • ${numExperiments} experiments`)
 
-    // Tooltip for hover (will be moved to highest z-layer later)
+    // Tooltip for Hover 
     const tooltip = svg.append("g")
       .attr("class", "bar-tooltip")
       .style("opacity", 0)
@@ -293,7 +304,7 @@ const BinomialDistributionAnimation = () => {
       .attr("x", 0)
       .attr("y", 0)
       .attr("text-anchor", "middle")
-      .style("fill", colors.accent)
+      .style("fill", colors.data)
       .style("font-family", "Aptos, system-ui, sans-serif")
       .style("font-size", "48px")
       .style("font-weight", "600")
@@ -389,7 +400,7 @@ const BinomialDistributionAnimation = () => {
           .attr("x", width / 2)
           .attr("y", height / 2 - 50)
           .attr("text-anchor", "middle")
-          .style("fill", colors.accent)
+          .style("fill", colors.data)
           .style("font-family", "Aptos, system-ui, sans-serif")
           .style("font-size", "24px")
           .style("font-weight", "600")
@@ -559,7 +570,7 @@ const BinomialDistributionAnimation = () => {
 
   useEffect(() => {
     initializeVisualization()
-  }, [n, p, numExperiments])
+  }, [n, p, numExperiments, theme])
 
   useEffect(() => {
     // Reset hoveredK when changing stages
@@ -591,7 +602,7 @@ const BinomialDistributionAnimation = () => {
         <div className="p-6">
 
       {/* Controls */}
-      <div className="flex justify-center items-center gap-3 mb-8">
+      <div className="flex justify-center items-center gap-2 mb-8">
         <button
           onClick={() => setShowSettings(!showSettings)}
           className="flex items-center gap-2 px-4 py-2 transition-all duration-200 hover:bg-opacity-80 focus:outline-none"
@@ -601,13 +612,13 @@ const BinomialDistributionAnimation = () => {
             border: `1px solid ${colors.border}`,
             borderRadius: '6px',
             fontFamily: 'JetBrains Mono, monospace',
-            fontSize: '14px',
+            fontSize: '12px',
             fontWeight: '400',
             outline: 'none'
           }}
         >
           <Settings className="w-4 h-4" style={{ color: showSettings ? colors.accent : colors.text }} />
-          Try Me
+          Try
         </button>
 
         <button
@@ -615,9 +626,9 @@ const BinomialDistributionAnimation = () => {
           disabled={isAnimating}
           className="flex items-center gap-2 px-5 py-2 transition-all duration-200 hover:bg-opacity-90 disabled:opacity-60"
           style={{
-            backgroundColor: colors.accent,
-            color: colors.background,
-            border: 'none',
+            backgroundColor: theme === 'dark' ? '#222' : '#fff',
+            color: theme === 'dark' ? '#fff' : '#222',
+            border: `1px solid ${colors.border}`,
             borderRadius: '6px',
             fontFamily: 'JetBrains Mono, monospace',
             fontSize: '14px',
@@ -780,11 +791,19 @@ const BinomialDistributionAnimation = () => {
           <div className="mb-3 technical-mono" style={{ color: colors.textMuted, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             Binomial Probability Mass Function
           </div>
-          <div className="text-white">
+          <div>
             {hoveredK !== null ? (
-              <LatexRenderer math={`P(X=${hoveredK}) = \\binom{${n}}{\\color{#60a5fa}{${hoveredK}}} ${p}^{\\color{#60a5fa}{${hoveredK}}} (1-${p})^{${n}-\\color{#60a5fa}{${hoveredK}}}`} inline={false} />
+              <LatexRenderer 
+                math={`P(X=${hoveredK}) = \\binom{${n}}{\\color{#60a5fa}{${hoveredK}}} ${p}^{\\color{#60a5fa}{${hoveredK}}} (1-${p})^{${n}-\\color{#60a5fa}{${hoveredK}}}`}
+                inline={false}
+                style={{ color: colors.text }}
+              />
             ) : (
-              <LatexRenderer math={`P(X=k) = \\binom{${n}}{k} ${p}^k (1-${p})^{${n}-k}`} inline={false} />
+              <LatexRenderer 
+                math={`P(X=k) = \\binom{${n}}{k} ${p}^k (1-${p})^{${n}-k}`}
+                inline={false}
+                style={{ color: colors.text }}
+              />
             )}
           </div>
           
@@ -801,7 +820,7 @@ const BinomialDistributionAnimation = () => {
           }}>
             {hoveredK !== null ? (
               <div style={{ 
-                color: colors.accent, 
+                color: colors.data,
                 fontSize: '14px', 
                 fontWeight: 'bold', 
                 textAlign: 'center',

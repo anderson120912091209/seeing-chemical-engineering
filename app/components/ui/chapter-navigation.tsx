@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTheme } from '@/app/contexts/theme-context'
+
 
 interface Chapter {
   id: string
@@ -28,7 +30,38 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set())
+  const [hoveredChapter, setHoveredChapter] = useState<string | null>(null)
+  const { theme } = useTheme();
 
+  const sidebarBg = theme === 'dark'
+    ? 'rgba(0, 0, 0, 0.3)'
+    : 'rgba(255, 255, 255, 0.92)';
+  const sidebarStyle = {
+    background: sidebarBg,
+    WebkitBackdropFilter: 'blur(18px)',
+    backdropFilter: 'blur(18px)',
+    backgroundColor: sidebarBg,
+    borderRight: theme === 'dark' ? '1px solid rgba(255,255,255,0.10)' : '1px solid #e5e7eb',
+  };
+
+  const textColor = theme === 'dark' ? '#fff' : '#222';
+  const textColorMuted = theme === 'dark' ? '#bbb' : '#444';
+  const textColorActive = theme === 'dark' ? '#e0eaff' : '#2563eb';
+  const textColorNumber = theme === 'dark' ? '#b5b5b5' : '#666';
+  
+  // Theme-aware hover colors
+  const hoverBg = theme === 'dark' 
+    ? 'rgba(255, 255, 255, 0.04)' 
+    : '#f5f5f5'; // light grey for light mode
+
+  // Theme-aware colors for active/selected state
+  const activeBg = theme === 'dark' 
+    ? 'rgba(59, 130, 246, 0.15)' 
+    : '#f0f0f0'; // light grey for active background in light mode
+  const activeTextColor = theme === 'dark' ? '#60a5fa' : '#2d2d2d'; // darker text for light mode
+  const activeBorderColor = theme === 'dark' ? '#fff' : '#5a5a5a'; // lighter dark color for border in light mode
+
+  
   const handleSidebarToggle = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
@@ -93,13 +126,15 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -320, opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="hidden lg:block fixed left-0 top-0 h-full w-80 bg-black/60 backdrop-blur-xl border-r border-white/20 shadow-lg z-40 pt-20"
+              className="hidden lg:block fixed left-0 top-0 h-full w-80 border-r shadow-lg z-40 pt-20"
+              style={sidebarStyle}
             >
               <div className="p-8 h-full overflow-y-auto">
                 {/* Header */}
                 <div className="mb-12">
-                  <h3 className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-light mb-4 select-none">Contents</h3>
-                  <div className="w-8 h-[1px] bg-white/20"></div>
+                  <h3 className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-light mb-4 select-none"
+                  style={{ color: textColorMuted }}>Contents</h3>
+                  <div className="w-8 h-[1px]" style={{ backgroundColor: textColorMuted }}></div>
                 </div>
                 
                 {/* Chapters */}
@@ -115,28 +150,37 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
                             handleSectionClick(chapter.id)
                           }
                         }}
-                        className={`w-full text-left transition-all duration-300 p-4 border-l-2 ${
-                          activeSection === chapter.id 
-                            ? 'border-l-white bg-white/5 text-white' 
-                            : 'border-l-white/10 hover:border-l-white/30 hover:bg-white/[0.02] text-white/70 hover:text-white/90'
-                        }`}
+                        onMouseEnter={() => setHoveredChapter(chapter.id)}
+                        onMouseLeave={() => setHoveredChapter(null)}
+                        className="w-full text-left transition-all duration-300 p-4"
+                        style={{
+                          backgroundColor: activeSection === chapter.id 
+                            ? activeBg
+                            : (hoveredChapter === chapter.id ? hoverBg : 'transparent'),
+                          color: activeSection === chapter.id ? activeTextColor : textColor,
+                          borderLeft: activeSection === chapter.id 
+                            ? `2px solid ${activeBorderColor}`
+                            : (theme === 'dark' ? '2px solid rgba(255,255,255,0.10)' : '2px solid #e5e7eb'),
+                          borderRadius: '0px',
+                          marginBottom: '2px',
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             {/* Chapter Number */}
-                            <span className={`text-xs font-light tracking-wider transition-colors duration-300 ${
-                              activeSection === chapter.id 
-                                ? 'text-white/60' 
-                                : 'text-white/30 group-hover:text-white/50'
-                            }`}>
+                            <span
+                              className="text-xs font-light tracking-wider transition-colors duration-300"
+                              style={{ color: activeSection === chapter.id ? textColorNumber : textColorMuted }}
+                            >
                               {chapter.number.padStart(2, '0')}
                             </span>
                             
                             {/* Chapter Title */}
                             <div className="flex-1">
-                              <h4 className={`text-sm font-light tracking-wide leading-relaxed transition-colors duration-300 ${
-                                activeSection === chapter.id ? 'text-white' : 'text-white/70 group-hover:text-white/90'
-                              }`}>
+                              <h4
+                                className="text-sm font-light tracking-wide leading-relaxed transition-colors duration-300"
+                                style={{ color: activeSection === chapter.id ? textColor : textColorMuted }}
+                              >
                                 {chapter.title}
                               </h4>
                             </div>
@@ -177,16 +221,16 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
                                   }`}
                                 >
                                   <div className="flex items-center gap-4">
-                                    <span className={`text-[10px] font-light tracking-wider transition-colors duration-300 ${
-                                      activeSection === subchapter.id 
-                                        ? 'text-white/40' 
-                                        : 'text-white/20 group-hover/sub:text-white/30'
-                                    }`}>
+                                    <span
+                                      className="text-[10px] font-light tracking-wider transition-colors duration-300"
+                                      style={{ color: activeSection === subchapter.id ? textColorNumber : textColorMuted }}
+                                    >
                                       {subchapter.number}
                                     </span>
-                                    <span className={`text-xs font-light tracking-wide transition-colors duration-300 ${
-                                      activeSection === subchapter.id ? 'text-white' : 'text-white/50 group-hover/sub:text-white/80'
-                                    }`}>
+                                    <span
+                                      className="text-xs font-light tracking-wide transition-colors duration-300"
+                                      style={{ color: activeSection === subchapter.id ? textColor : textColorMuted }}
+                                    >
                                       {subchapter.title}
                                     </span>
                                   </div>
@@ -246,7 +290,8 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -320, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="lg:hidden fixed left-0 top-0 h-full w-80 bg-black/60 backdrop-blur-xl border-r border-white/20 shadow-lg z-40 pt-20"
+              className="lg:hidden fixed left-0 top-0 h-full w-80 border-r shadow-lg z-40 pt-20"
+              style={sidebarStyle}
             >
               <div className="p-8 h-full overflow-y-auto">
                 {/* Header */}
@@ -268,28 +313,37 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
                             handleSectionClick(chapter.id)
                           }
                         }}
-                        className={`w-full text-left transition-all duration-300 p-4 border-l-2 ${
-                          activeSection === chapter.id 
-                            ? 'border-l-white bg-white/5 text-white' 
-                            : 'border-l-white/10 hover:border-l-white/30 hover:bg-white/[0.02] text-white/70 hover:text-white/90'
-                        }`}
+                        onMouseEnter={() => setHoveredChapter(chapter.id)}
+                        onMouseLeave={() => setHoveredChapter(null)}
+                        className="w-full text-left transition-all duration-300 p-4"
+                        style={{
+                          backgroundColor: activeSection === chapter.id 
+                            ? activeBg
+                            : (hoveredChapter === chapter.id ? hoverBg : 'transparent'),
+                          color: activeSection === chapter.id ? activeTextColor : textColor,
+                          borderLeft: activeSection === chapter.id 
+                            ? `2px solid ${activeBorderColor}`
+                            : (theme === 'dark' ? '2px solid rgba(255,255,255,0.10)' : '2px solid #e5e7eb'),
+                          borderRadius: '0px',
+                          marginBottom: '2px',
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             {/* Chapter Number */}
-                            <span className={`text-xs font-light tracking-wider transition-colors duration-300 ${
-                              activeSection === chapter.id 
-                                ? 'text-white/60' 
-                                : 'text-white/30 group-hover:text-white/50'
-                            }`}>
+                            <span
+                              className="text-xs font-light tracking-wider transition-colors duration-300"
+                              style={{ color: activeSection === chapter.id ? textColorNumber : textColorMuted }}
+                            >
                               {chapter.number.padStart(2, '0')}
                             </span>
                             
                             {/* Chapter Title */}
                             <div className="flex-1">
-                              <h4 className={`text-sm font-light tracking-wide leading-relaxed transition-colors duration-300 ${
-                                activeSection === chapter.id ? 'text-white' : 'text-white/70 group-hover:text-white/90'
-                              }`}>
+                              <h4
+                                className="text-sm font-light tracking-wide leading-relaxed transition-colors duration-300"
+                                style={{ color: activeSection === chapter.id ? textColor : textColorMuted }}
+                              >
                                 {chapter.title}
                               </h4>
                             </div>
@@ -330,16 +384,16 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
                                   }`}
                                 >
                                   <div className="flex items-center gap-4">
-                                    <span className={`text-[10px] font-light tracking-wider transition-colors duration-300 ${
-                                      activeSection === subchapter.id 
-                                        ? 'text-white/40' 
-                                        : 'text-white/20 group-hover/sub:text-white/30'
-                                    }`}>
+                                    <span
+                                      className="text-[10px] font-light tracking-wider transition-colors duration-300"
+                                      style={{ color: activeSection === subchapter.id ? textColorNumber : textColorMuted }}
+                                    >
                                       {subchapter.number}
                                     </span>
-                                    <span className={`text-xs font-light tracking-wide transition-colors duration-300 ${
-                                      activeSection === subchapter.id ? 'text-white' : 'text-white/50 group-hover/sub:text-white/80'
-                                    }`}>
+                                    <span
+                                      className="text-xs font-light tracking-wide transition-colors duration-300"
+                                      style={{ color: activeSection === subchapter.id ? textColor : textColorMuted }}
+                                    >
                                       {subchapter.title}
                                     </span>
                                   </div>
