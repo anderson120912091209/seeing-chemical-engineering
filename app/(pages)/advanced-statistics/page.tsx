@@ -14,7 +14,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/CHAPTER-1/binomial-distribution'
-import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2 /defaultanimation'
+import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2/defaultanimation'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/chapter-1-intro-content'  
