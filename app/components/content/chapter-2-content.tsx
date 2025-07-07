@@ -11,6 +11,9 @@ const colors = {
     textSecondary: theme === "dark" ? "text-gray-300" : "text-gray-700",
     
 }
+const [sampleMean, setSampleMean] = useState(0);
+const [sampleSize, setSampleSize] = useState(0);
+const [sampleVariance, setSampleVariance] = useState(0);
 
 // Components 
   return (
@@ -37,8 +40,66 @@ const colors = {
                 </p>
                 <p>
                     This is the essence of hypothesis testing: using sample data to make informed decisions about populations, 
-                    while controlling for the risk of making wrong conclusions.
+                    while controlling for the risk of making wrong conclusions. 
+                    
                 </p>
+                <p>
+                    Let's play with the animation on the right to collect some sample data: 
+                </p>
+                
+                {/* Sample Statistics Card */}
+                <div className={`mt-6 p-6 rounded-lg border ${
+                    theme === 'dark' 
+                        ? 'bg-gray-800/50 border-gray-700' 
+                        : 'bg-blue-50 border-blue-200'
+                }`}>
+                    <h3 className={`text-lg font-semibold mb-4 ${colors.text}`}>
+                        Sample Statistics
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className={`text-center p-4 rounded-md ${
+                            theme === 'dark' 
+                                ? 'bg-gray-700/50' 
+                                : 'bg-white'
+                        }`}>
+                            <div className={`text-2xl font-bold ${colors.text}`}>
+                                {sampleMean.toFixed(2)}g
+                            </div>
+                            <div className={`text-sm ${colors.textSecondary}`}>
+                                Sample Mean
+                            </div>
+                        </div>
+                        <div className={`text-center p-4 rounded-md ${
+                            theme === 'dark' 
+                                ? 'bg-gray-700/50' 
+                                : 'bg-white'
+                        }`}>
+                            <div className={`text-2xl font-bold ${colors.text}`}>
+                                {sampleSize}
+                            </div>
+                            <div className={`text-sm ${colors.textSecondary}`}>
+                                Sample Count
+                            </div>
+                        </div>
+                        <div className={`text-center p-4 rounded-md ${
+                            theme === 'dark' 
+                                ? 'bg-gray-700/50' 
+                                : 'bg-white'
+                        }`}>
+                            <div className={`text-2xl font-bold ${colors.text}`}>
+                                {Math.sqrt(sampleVariance).toFixed(2)}g
+                            </div>
+                            <div className={`text-sm ${colors.textSecondary}`}>
+                                Sample Std Dev
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+            
+                   
+    
             </div>
             <div> 
                 

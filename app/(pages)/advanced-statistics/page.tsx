@@ -15,10 +15,12 @@ import AnovaAnimation from '@/app/components/animations/ANOVA/anova-animation'
 import TeachingRegressionAnimation, { RegressionState, STAGES as REGRESSION_STAGES } from '@/app/components/animations/ANOVA/regression-animation'
 import BinomialBasketballAnimation from '@/app/components/animations/STATISTICS/CHAPTER-1/binomial-distribution'
 import CerealMachineAnimation from '@/app/components/animations/STATISTICS/CHAPTER-2/defaultanimation'
+import DegreeOfFreedom from '@/app/components/animations/STATISTICS/CHAPTER-4/degree-of-freedom'
 
 //Import Contents (Left Column)
 import Introduction from '@/app/components/content/chapter-1-intro-content'  
 import Chapter2 from '@/app/components/content/chapter-2-content'
+import Chapter4 from '@/app/components/content/chapter-4-content'
   
 
 //Import Utils Functions 
@@ -43,6 +45,7 @@ const AdvancedStatisticsPage = () => {
   const introductionRef = useRef<HTMLElement>(null)
   const chapter2Ref = useRef<HTMLElement>(null)
   const regressionRef = useRef<HTMLElement>(null)
+  const chapter4Ref = useRef<HTMLElement>(null)
 
   // Chapter configuration
   const chapters = [
@@ -74,7 +77,19 @@ const AdvancedStatisticsPage = () => {
     //Chapter 3 Configuration 
     { title: "Regression", 
       id: "regression", 
-      number: "3" }
+      number: "3" },
+
+    {
+      title: "Concepts You Know But Never Understood",
+      id: "hard concepts",
+      number: "4",
+      subchapters: [
+        {title: "P-Value", id: "p-value", number: "4.1"},
+        {title: "Degrees of Freedom", id: "degrees-of-freedom", number: "4.2"},
+        {title: "Central Limit Theorem", id: "central-limit-theorem", number: "4.3"},
+        {title: "Type I and Type II Errors", id: "type-i-and-type-ii-errors", number: "4.4"},
+      ]
+    }
   ]
 
   // Navigation handler
@@ -102,7 +117,8 @@ const AdvancedStatisticsPage = () => {
     const sections = [
       { ref: introductionRef, id: 'introduction' },
       { ref: chapter2Ref, id: 'statistical-inference' },
-      { ref: regressionRef, id: 'regression' }
+      { ref: regressionRef, id: 'regression' },
+      { ref: chapter4Ref, id: 'hard concepts' }
     ]
 
     let currentSection = 'introduction' // default
@@ -130,7 +146,13 @@ const AdvancedStatisticsPage = () => {
     if (currentSection !== activeSection) {
       console.log('Scroll detected section change:', currentSection)
       setActiveSection(currentSection)
-      setActiveSubchapter(null) // Reset subchapter when auto-switching
+      
+      // Set default subchapters for specific sections
+      if (currentSection === 'hard concepts') {
+        setActiveSubchapter('degrees-of-freedom') // Default to degrees of freedom
+      } else {
+        setActiveSubchapter(null) // Reset subchapter when auto-switching to other sections
+      }
     }
   }
 
@@ -156,7 +178,7 @@ const AdvancedStatisticsPage = () => {
 
     // Observe sections with a delay to ensure refs are ready
     setTimeout(() => {
-      const sections = [introductionRef.current, chapter2Ref.current, regressionRef.current]
+      const sections = [introductionRef.current, chapter2Ref.current, regressionRef.current, chapter4Ref.current]
       sections.forEach((section) => {
         if (section) {
           observer.observe(section)
@@ -252,6 +274,37 @@ const AdvancedStatisticsPage = () => {
             {/* Replace with <RegressionAnimation /> */}
           </div>
         )
+      case 'hard concepts':
+        switch(activeSubchapter) {
+          case 'p-value':
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">P-Value Animation - Coming Soon</p>
+              </div>
+            )
+          case 'degrees-of-freedom':
+            return (
+              <DegreeOfFreedom />
+            )
+          case 'central-limit-theorem':
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Central Limit Theorem Animation - Coming Soon</p>
+              </div>
+            )
+          case 'type-i-and-type-ii-errors':
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Type I & II Errors Animation - Coming Soon</p>
+              </div>
+            )
+          default:
+            return (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-muted-foreground">Select a concept to explore</p>
+              </div>
+            )
+        }
       default:
         return (
           <div className="w-full h-full flex items-center justify-center">
@@ -349,6 +402,13 @@ return (
                       </div>
                     </div>
                   </section>
+                  <section
+                    ref={chapter4Ref}
+                    data-section="hard concepts"
+                    className="min-h-screen"
+                  >
+                    <Chapter4 />  
+                  </section>
                   
                   {/* Add some extra content to demonstrate scrolling when needed */}
                   <section className="pb-8">
@@ -379,6 +439,7 @@ return (
                         {activeSection === 'introduction' && 'Chapter 1: Distribution Animations'}
                         {activeSection === 'statistical-inference' && 'Chapter 2: Hypothesis Testing'}
                         {activeSection === 'regression' && 'Chapter 3: Regression Analysis'}
+                        {activeSection === 'hard concepts' && 'Chapter 4: Fundamental Concepts'}
                       </h3>
                       {activeSubchapter && (
                         <p className="text-sm text-muted-foreground/70 mt-1">
